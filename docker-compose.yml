@@ -3,6 +3,8 @@ services:
   app:
     build: 
       context: ./app
+    depends_on:
+      - mysqldb  
     restart: unless-stopped
     env_file:
       - ./app/.env
@@ -18,11 +20,16 @@ services:
     command: npm run dev  
     
   mysqldb:
-    image: mysql:lts-oraclelinux9
+    image: mysql:lts
     restart: unless-stopped
     env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
     ports:
       - ${DB_HOST_PORT}:${DB_CONTAINER_PORT}
     volumes:
       - db:/var/lib/mysql
-  
+
+volumes:
+  db:    
+
