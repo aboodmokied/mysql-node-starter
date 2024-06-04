@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   app:
     build: ./app
@@ -10,3 +10,5 @@ services:
     command: npm run dev  
     env_file:
       - ./app/.env
+    environment:
+      - PORT=${PORT}
