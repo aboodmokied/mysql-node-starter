@@ -6,7 +6,12 @@ const app=express();
 // Routes
 // ... 
 
-const PORT=process.env.PORT || 3000;
+app.get('/',(req,res,next)=>{
+    console.log('test test');
+    res.send({message:'Done'});
+})
+
+const PORT=process.env.PORT || 5000;
 
 app.listen(PORT,()=>{
     console.log(`Server Running on PORT: ${PORT}`);
