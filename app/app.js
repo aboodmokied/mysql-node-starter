@@ -1,18 +1,15 @@
 const express=require('express');
+const Application = require('./Application');
 require('dotenv').config();
 const app=express();
 
+const application=new Application();
 
-// Routes
-// ... 
-
-app.get('/',(req,res,next)=>{
-    console.log('test test');
-    res.send({message:'Done'});
-})
-
-const PORT=process.env.PORT || 5000;
-
-app.listen(PORT,()=>{
-    console.log(`Server Running on PORT: ${PORT}`);
+application.run(app).then(()=>{
+    const PORT=process.env.PORT || 5000;
+    app.listen(PORT,()=>{
+        console.log(`Server Running on PORT: ${PORT}`);
+    })
+}).catch(err=>{
+    console.log('Server Error',err);
 })
