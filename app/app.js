@@ -1,6 +1,6 @@
 const express=require('express');
-const Application = require('./Application');
 require('dotenv').config();
+const Application = require('./Application');
 const app=express();
 
 const application=new Application();

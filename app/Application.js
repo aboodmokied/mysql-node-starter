@@ -1,8 +1,7 @@
 const Kernal = require("./Kernal");
 const Database = require("./database/Database");
 const express=require('express');
-const webRoutes = require("./routes/web");
-const apiRoutes = require("./routes/api");
+
 
 class Application{
     #app=null;
@@ -10,7 +9,7 @@ class Application{
     #connection=null;
     constructor(){
         // singleton
-        return Database.instance??=this;
+        return Application.instance??=this;
     }
 
     get app(){
@@ -38,7 +37,7 @@ class Application{
         this.#defineSettings()
         this.#defineMiddlewares()
         this.#defineRoutes();
-        await this.#connection.migrate();
+        await this.#database.migrate();
     }
 
 
@@ -49,8 +48,8 @@ class Application{
         this.#app.use(Kernal.global);
     }
     #defineRoutes(){
-        this.#app.use(Kernal.web,webRoutes)
-        this.#app.use('/api',Kernal.api,apiRoutes);
+        this.#app.use(Kernal.web,require("./routes/web"))
+        this.#app.use('/api',Kernal.api,require("./routes/api"));
         // set global error handler
     }
 

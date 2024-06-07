@@ -7,12 +7,8 @@ class Database{
     #connectionSetting=null;
     #db=null;
     constructor(db=database.default){
-        // singleton
-        if(!Database.instance){
-            this.#db=db;
-            return Database.instance??=this;
-        }
-        return Database.instance;
+        this.#db=db;
+        return this;
     }
 
 
@@ -22,24 +18,24 @@ class Database{
         return this.#connection;
     }
 
-    #createDB(){
+    async #createDB(){
         if(this.#db=='mysql'){
-            const {username:user,password,host,port,database}=database.connections['mysql'];
+            const {username:user,password,host,port,database:databaseName}=database.connections['mysql'];
             let connection=mysql.createPool({
             user,
             password,
             host,
             port
-        })
-            connection.query(`CREATE DATABASE IF NOT EXISTS ${database}`,(error,result)=>{
-            if(!error){
-                migrate();
+        }).promise();
+            try {
+                await connection.query(`CREATE DATABASE IF NOT EXISTS ${databaseName}`)
+                await this.migrate();
                 connection.end();
                 connection=null;
-            }else{
-                console.log('Database Error',error);
+            } catch (error) {
+                console.log('Create Database Error',error);
+                throw error;
             }
-        })
         }
     }
 
@@ -48,9 +44,10 @@ class Database{
             await this.#connection.sync();
         } catch (error) {
             if(error.original.errno==1049){ // database not found
-                this.#createDB();
+                await this.#createDB();
             }else{
-                console.log('Database Error',error);
+                console.log('Database Migration Error',error);
+                throw error;
             }
         }
     }
