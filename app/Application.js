@@ -34,6 +34,7 @@ class Application{
     async #setup(){
         this.#database=new Database();
         this.#connection=this.#database.connect();
+        // the ordering is important
         this.#defineSettings()
         this.#defineMiddlewares()
         this.#defineRoutes();
@@ -50,11 +51,9 @@ class Application{
     #defineRoutes(){
         this.#app.use(Kernal.web,require("./routes/web"))
         this.#app.use('/api',Kernal.api,require("./routes/api"));
-        // set global error handler
+        // global error handler
+        this.#app.use(Kernal.error);
     }
-
-
-
 
 }
 
