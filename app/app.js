@@ -1,15 +1,16 @@
 const express=require('express');
 require('dotenv').config();
 const Application = require('./Application');
+const { errorLogger, logger } = require('./logging/Logger');
 const app=express();
 
 const application=new Application();
 
 application.run(app).then(()=>{
-    const PORT=process.env.PORT || 5000;
+    const PORT=process.env.PORT || 3000;
     app.listen(PORT,()=>{
-        console.log(`Server Running on PORT: ${PORT}`);
+        logger.info(`Server is running on port ${PORT}`);
     })
-}).catch(err=>{
-    console.log('Server Error',err);
+}).catch(error=>{
+    errorLogger.error(`ServerRunningError: 500 - ${error.stack}`);
 })

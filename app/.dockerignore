@@ -2,3 +2,7 @@ node_modules
 Dockerfile
 docker-compose.yml
 .env
+
+# Logs
+logs
+*.log

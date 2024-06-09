@@ -1,4 +1,4 @@
-const {NotFound} = require("../../config/ErrorConfig");
+const {NotFound} = require("../../config/errorConfig");
 const AppError = require("../AppError");
 
 class NotFoundError extends AppError{

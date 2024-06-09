@@ -33,7 +33,6 @@ class Database{
                 connection.end();
                 connection=null;
             } catch (error) {
-                console.log('Create Database Error',error);
                 throw error;
             }
         }
@@ -46,7 +45,6 @@ class Database{
             if(error.original.errno==1049){ // database not found
                 await this.#createDB();
             }else{
-                console.log('Database Migration Error',error);
                 throw error;
             }
         }
