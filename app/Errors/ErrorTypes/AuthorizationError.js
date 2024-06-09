@@ -1,4 +1,4 @@
-const {Authorization} = require("../../config/ErrorConfig");
+const {Authorization} = require("../../config/errorConfig");
 const AppError = require("../AppError");
 
 class AuthorizationError extends AppError{
