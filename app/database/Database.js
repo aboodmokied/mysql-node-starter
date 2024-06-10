@@ -1,6 +1,6 @@
 const {Sequelize}=require('sequelize');
 const mysql=require('mysql2');
-const database = require('../config/database');
+const database = require('../config/databaseConfig');
 
 class Database{
     #connection=null;
