@@ -35,8 +35,9 @@ class Application{
         this.#database=new Database();
         this.#connection=this.#database.connect();
         // the ordering is important
-        this.#defineSettings()
-        this.#defineMiddlewares()
+        this.#defineSecrityMiddlewares();
+        this.#defineSettings();
+        this.#defineMiddlewares();
         this.#defineRoutes();
         await this.#database.migrate();
     }
@@ -44,6 +45,9 @@ class Application{
 
     #defineSettings(){
         this.#app.use(express.static('public'));
+    }
+    #defineSecrityMiddlewares(){
+        this.#app.use(Kernal.security);
     }
     #defineMiddlewares(){
         this.#app.use(Kernal.global);

@@ -19,6 +19,11 @@ module.exports={
         message:'Invalid Input',
         statusCode:400
     },
+    RateLimit:{
+        type:"RateLimit",
+        message:'Too many requests from this IP, please try again later',
+        statusCode:429
+    },
     Server:{
         type:"Server",
         message:'Something went wrong',
