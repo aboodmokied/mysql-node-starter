@@ -3,6 +3,7 @@ const express=require('express');
 const ErrorHandler = require('./middlewares/ErrorHandler');
 const requestLogger = require('./middlewares/requestLogger');
 const limiter = require('./middlewares/limiter');
+const helmet=require('helmet');
 
 const Kernal={
     global:[
@@ -11,6 +12,7 @@ const Kernal={
         express.urlencoded({extended:false}),
     ],
     security:[
+        helmet(),
         limiter
     ],
     api:[],
