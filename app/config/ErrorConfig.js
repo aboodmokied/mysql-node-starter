@@ -24,6 +24,11 @@ module.exports={
         message:'Too many requests from this IP, please try again later',
         statusCode:429
     },
+    Cors:{
+        type:"Cors",
+        message:'Not allowed by CORS',
+        statusCode:401
+    },
     Server:{
         type:"Server",
         message:'Something went wrong',

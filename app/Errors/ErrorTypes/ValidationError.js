@@ -1,4 +1,4 @@
-const {Validation} = require("../../config/ErrorConfig");
+const {Validation} = require("../../config/errorConfig");
 const AppError = require("../AppError");
 
 class ValidationError extends AppError{
