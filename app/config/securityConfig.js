@@ -1,7 +1,13 @@
 module.exports={
-    rateLimit:{
+    rateLimitConfig:{
         periodInMinutes:15,
         times:100
     },
-    payloadSize:'100kb'
+    payloadConfig:{ 
+        maxSize:'100kb'
+    },
+    corsConfig:{
+        allowedOrigins:[['https://www.yoursite.com', 'http://localhost:5500']],
+    
+    }
 }

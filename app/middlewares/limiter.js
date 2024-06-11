@@ -1,10 +1,10 @@
 const rateLimit=require('express-rate-limit');
 const RateLimitExceededError = require('../Errors/ErrorTypes/RateLimitExceededError');
-const {rateLimit:config} = require('../config/securityConfig');
+const {rateLimitConfig} = require('../config/securityConfig');
 
 const limiter=rateLimit({
-    windowMs:config.periodInMinutes * 60 * 1000,
-    max:config.times,
+    windowMs:rateLimitConfig.periodInMinutes * 60 * 1000,
+    max:rateLimitConfig.times,
     handler: (req, res, next) => {
         next(new RateLimitExceededError());
     }
