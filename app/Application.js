@@ -6,7 +6,7 @@ const express=require('express');
 class Application{
     #app=null;
     #database=null;
-    #connection=null;
+    static connection=null;
     constructor(){
         // singleton
         return Application.instance??=this;
@@ -22,9 +22,9 @@ class Application{
     // }
     
     
-    get connection(){
-        return this.#connection;
-    }
+    // get connection(){
+    //     return Application.connection;
+    // }
 
     async run(app){
         this.#app=app;
@@ -33,11 +33,12 @@ class Application{
 
     async #setup(){
         this.#database=new Database();
-        this.#connection=this.#database.connect();
+        Application.connection=this.#database.connect();
         // the ordering is important
         this.#defineSecrityMiddlewares();
         this.#defineSettings();
         this.#defineMiddlewares();
+        this.#defineModels();
         this.#defineRoutes();
         await this.#database.migrate();
     }
@@ -52,6 +53,12 @@ class Application{
     #defineMiddlewares(){
         this.#app.use(Kernal.global);
     }
+
+    #defineModels(){
+        require('./models'); // this will run the index.js file so it will load all defined models (Dynamic Model Loader)
+        require('./models/relations'); // define relations between models
+    }   
+    
     #defineRoutes(){
         this.#app.use(Kernal.web,require("./routes/web"))
         this.#app.use('/api',Kernal.api,require("./routes/api"));
