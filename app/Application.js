@@ -1,4 +1,3 @@
-const Kernal = require("./Kernal");
 const Database = require("./database/Database");
 const express=require('express');
 
@@ -35,10 +34,10 @@ class Application{
         this.#database=new Database();
         Application.connection=this.#database.connect();
         // the ordering is important
+        this.#defineModels();
         this.#defineSecrityMiddlewares();
         this.#defineSettings();
         this.#defineMiddlewares();
-        this.#defineModels();
         this.#defineRoutes();
         await this.#database.migrate();
     }
@@ -48,9 +47,11 @@ class Application{
         this.#app.use(express.static('public'));
     }
     #defineSecrityMiddlewares(){
+        const Kernal = require("./Kernal");
         this.#app.use(Kernal.security);
     }
     #defineMiddlewares(){
+        const Kernal = require("./Kernal");
         this.#app.use(Kernal.global);
     }
 
@@ -60,6 +61,7 @@ class Application{
     }   
     
     #defineRoutes(){
+        const Kernal = require("./Kernal");
         this.#app.use(Kernal.web,require("./routes/web"))
         this.#app.use('/api',Kernal.api,require("./routes/api"));
         // global error handler
