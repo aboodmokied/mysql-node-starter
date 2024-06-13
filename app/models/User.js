@@ -6,6 +6,10 @@ const User=Application.connection.define('user',{
         type:DataTypes.STRING,
         allowNull:false
     },
+    password:{  
+        type:DataTypes.STRING,
+        allowNull:false
+    },
     guard:{  // means user type e.g:student
         type:DataTypes.STRING,
         allowNull:false

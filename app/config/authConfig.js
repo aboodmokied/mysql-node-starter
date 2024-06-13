@@ -1,4 +1,3 @@
-const User = require("../models/User");
 
 module.exports={
     defaults:{
@@ -7,14 +6,18 @@ module.exports={
     guards:{
         student:{
             drivers:['session','token'],
-            provider:'students',
+            mainProvider:'main', // mainProvider: contain all users types
+            subProvider:'studentDetails' //  subProvider: contain extra info about specific type of users
         }
     },
     providers:{
-        students:{
+        main:{
             driver:'Sequelize',
-            mainModel:User, // mainModel: contain all users types
-            subModel:'StudentDetails' //  subModel: contain extra info about specific type of users
+            model:require("../models/User"), 
+        },
+        studentDetails:{
+            driver:'Sequelize',
+            model:'StudentDetails' 
         }
     },
    

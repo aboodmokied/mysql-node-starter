@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const authConfig = require("../../config/authConfig");
 const bcrypt=require('bcryptjs');
 
@@ -19,16 +20,17 @@ class Authenticate{
         const guardObj=authConfig.guards[this.#guard];
         if(!guardObj) throw Error('something went wrong in authConfig, check it'); // error for the devs
         if(guardObj.drivers.indexOf('session')!==-1){
-            const {provider}=guardObj;
-            const providerObj=authConfig.providers[provider];
+            const {mainProvider}=guardObj;
+            const providerObj=authConfig.providers[mainProvider];
             const {driver}=providerObj;
             if(driver=='Sequelize'){ // use Sequelize 
-                const {mainModel}=providerObj;
+                const {model}=providerObj;
                 // verify the user
                 const {password:reqPassword}=req.body;
                 delete req.body.password;
-                const user=await mainModel.findOne(req.body);
+                const user=await model.findOne({where:{...req.body}});
                 if(!user) return {passed:false,error:'wrong credentials'};
+                if(this.#guard !=user.guard) return {passed:false,error:`${user.guard} can't login as ${this.#guard}`}; 
                 if(!bcrypt.compareSync(reqPassword,user.password)) return {passed:false,error:'wrong password'};
                 // passed
                 req.session.isAuthenticated=true;

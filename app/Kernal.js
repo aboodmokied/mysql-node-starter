@@ -7,6 +7,7 @@ const helmet=require('helmet');
 const xss=require('xss-clean');
 const {payloadConfig} = require('./config/securityConfig');
 const cors = require('./middlewares/cors');
+const verifyUser = require('./services/authentication/middlewares/verifyUser');
 const Kernal={
     global:[
         requestLogger,
@@ -20,7 +21,7 @@ const Kernal={
         cors
     ],
     api:[],
-    web:[],
+    web:[verifyUser],
     error:[ErrorHandler]
 }
 
