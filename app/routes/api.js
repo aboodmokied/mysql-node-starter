@@ -1,5 +1,6 @@
 const express=require('express');
 const tryCatch = require('../util/tryCatch');
+const User = require('../models/User');
 const apiRoutes=express.Router();
 
 

@@ -1,4 +1,3 @@
-
 const {RateLimit} = require("../../config/errorConfig");
 const AppError = require("../AppError");
 
