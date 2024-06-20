@@ -5,9 +5,11 @@ module.exports={
     },
     guards:{
         student:{
+            code:100,
             drivers:['session','token'],
+            registeration:'global', // (that means any user can create a student account) or admin: (only admin can create new accounts) 
             mainProvider:'main', // mainProvider: contain all users types
-            subProvider:'studentDetails' //  subProvider: contain extra info about specific type of users
+            subProvider:'studentDetails', //  subProvider: contain extra info about specific type of users
         }
     },
     providers:{

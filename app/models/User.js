@@ -2,6 +2,11 @@ const { DataTypes } = require("sequelize");
 const Application = require("../Application");
 
 const User=Application.connection.define('user',{
+    email:{
+        type:DataTypes.STRING,
+        allowNull:false,
+        unique:true
+    },
     name:{
         type:DataTypes.STRING,
         allowNull:false
@@ -10,8 +15,8 @@ const User=Application.connection.define('user',{
         type:DataTypes.STRING,
         allowNull:false
     },
-    guard:{  // means user type e.g:student
-        type:DataTypes.STRING,
+    guardId:{  // means user type e.g:student
+        type:DataTypes.BIGINT,
         allowNull:false
     }
 })

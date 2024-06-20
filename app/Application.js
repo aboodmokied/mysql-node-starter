@@ -40,11 +40,19 @@ class Application{
         this.#defineMiddlewares();
         this.#defineRoutes();
         await this.#database.migrate();
+        await this.#defineAuthentication();
     }
 
 
     #defineSettings(){
-        this.#app.use(express.static('public'));
+        const rootPath=require.main.path;
+        const path=require('path');
+
+        this.#app.set('view engine', 'ejs');
+        this.#app.set('views', path.join(rootPath, 'views'));
+
+        this.#app.use(express.static(path.join(rootPath, 'public')));
+        this.#app.use(express.static(path.join(rootPath, 'node_modules', 'admin-lte')));
     }
     #defineSecrityMiddlewares(){
         const Kernal = require("./Kernal");
@@ -53,6 +61,11 @@ class Application{
     #defineMiddlewares(){
         const Kernal = require("./Kernal");
         this.#app.use(Kernal.global);
+    }
+
+    async #defineAuthentication(){
+        const Authenticate = require("./services/authentication/Authenticate");
+        await new Authenticate().setup(); // create guards that exists in authConfig
     }
 
     #defineModels(){
