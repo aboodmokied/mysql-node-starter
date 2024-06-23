@@ -23,7 +23,7 @@
   <div class="card">
     <div class="card-body register-card-body">
       <%- include('../components/errors.ejs') %>
-      <% if(locals.guards.length>=1){ %> 
+      <% if(locals.guards.length>1){ %> 
         <div style="margin-bottom: 10px; display: flex; gap: 5px; flex-direction: row; align-items: center;">
             <% for(let guard of locals.guards){ %>
             <a href="/auth/login/<%= guard %>" class="m-0 btn btn-block <%= locals.currentGuard==guard ? 'btn-secondary' : 'btn-outline-secondary' %>"><%= guard %></a>
@@ -59,7 +59,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Retype password" name="repeatedPassword" value="<%= locals.old?.repeatedPassword ?? ''%>">
+          <input type="password" class="form-control" placeholder="Confirm Password" name="confirmPassword" value="<%= locals.old?.confirmPassword ?? ''%>">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
@@ -76,7 +76,7 @@
 
    
 
-      <a href="/cms/auth/author/login" class="text-center">I already have a membership</a>
+      <a href="/auth/login/<%= locals.currentGuard %>" class="text-center">I already have a membership</a>
     </div>
    
   </div>

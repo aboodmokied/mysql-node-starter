@@ -5,7 +5,6 @@ const CorsError = require('../Errors/ErrorTypes/CorsError');
 const corsOptions={
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     origin: (origin, callback) => {
-      console.log(origin,origin===null);
         if (corsConfig.allowedOrigins.indexOf(origin) !== -1 || !origin || origin == 'null') {
           callback(null, true);
         } else {

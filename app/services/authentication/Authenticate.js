@@ -64,7 +64,7 @@ class Authenticate{
         }
     }
 
-    logout(){
+    logout(req){
         req.session.destroy(error=>{
             if(error){
                 throw Error('Failed to destroy session');

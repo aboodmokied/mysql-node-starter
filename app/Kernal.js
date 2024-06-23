@@ -9,7 +9,9 @@ const {payloadConfig} = require('./config/securityConfig');
 const corsMiddleware = require('./middlewares/corsMiddleware');
 const verifyUser = require('./services/authentication/middlewares/verifyUser');
 const session=require('express-session');
-const CorsError = require('./Errors/ErrorTypes/CorsError');
+const differentiateRequests = require('./middlewares/differentiateRequests');
+const addWith = require('./middlewares/addWith');
+const appendLocals = require('./middlewares/appendLocals');
 
 const Kernal={
     global:[
@@ -25,14 +27,15 @@ const Kernal={
               secure: false, // Note: `secure` should be true in production when using HTTPS
               httpOnly: true // Ensures the cookie is not accessible via JavaScript
             }
-          })
+          }),
+        differentiateRequests  
     ],
     security:[
         helmet(), // adds many security headers
         corsMiddleware()
     ],
     api:[limiter('api')],
-    web:[limiter('web'),verifyUser],
+    web:[limiter('web'),verifyUser,addWith,appendLocals],
     error:[ErrorHandler]
 }
 

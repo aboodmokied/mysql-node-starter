@@ -8,8 +8,8 @@ const User=Application.connection.define('user',{
         unique:true
     },
     name:{
-        type:DataTypes.STRING,
-        allowNull:false
+        type:DataTypes.STRING(30),
+        allowNull:false,
     },
     password:{  
         type:DataTypes.STRING,
