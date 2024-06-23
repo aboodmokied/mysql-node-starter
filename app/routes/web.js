@@ -4,14 +4,15 @@ const webRoutes=express.Router();
 const authController=require('../controllers/authController');
 const pagesConfig = require('../config/pagesConfig');
 const isGuest = require('../services/authentication/middlewares/isGuest');
+const validateRequest = require('../validation/middlewares/validateRequest');
 
 // login
-webRoutes.get(pagesConfig.authentication.login.route,isGuest,authController.getLogin);
-webRoutes.post('/auth/login',isGuest,authController.postLogin);
+webRoutes.get(pagesConfig.authentication.login.route,isGuest,validateRequest('login-page'),authController.getLogin);
+webRoutes.post('/auth/login',isGuest,validateRequest('login'),authController.postLogin);
 
 // register
-webRoutes.get(pagesConfig.authentication.register.route,isGuest,authController.getRegister);
-webRoutes.post('/auth/register',isGuest,authController.postRegister);
+webRoutes.get(pagesConfig.authentication.register.route,isGuest,validateRequest('register-page'),authController.getRegister);
+webRoutes.post('/auth/register',isGuest,validateRequest('register'),authController.postRegister);
 
 // logout
 webRoutes.get('/auth/logout',isAuthenticated,authController.logout);
