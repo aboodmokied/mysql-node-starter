@@ -29,7 +29,7 @@ exports.logout=(req,res,next)=>{
     const {guard}=req.user;
     new Authenticate().logout(req);
     req.user=undefined;
-    res.redirect(pagesConfig.authentication.login.path(guard.name));
+    res.redirect(pagesConfig.authentication.login.path(guard));
 };
 
 

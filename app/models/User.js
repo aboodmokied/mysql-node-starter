@@ -15,8 +15,8 @@ const User=Application.connection.define('user',{
         type:DataTypes.STRING,
         allowNull:false
     },
-    guardId:{  // means user type e.g:student
-        type:DataTypes.BIGINT,
+    guard:{  // means user type e.g:student
+        type:DataTypes.STRING,
         allowNull:false
     }
 })

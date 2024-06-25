@@ -40,7 +40,7 @@ class Application{
         this.#defineMiddlewares();
         this.#defineRoutes();
         await this.#database.migrate();
-        await this.#defineAuthentication();
+        // await this.#defineAuthentication();
     }
 
 
@@ -63,10 +63,10 @@ class Application{
         this.#app.use(Kernal.global);
     }
 
-    async #defineAuthentication(){
-        const Authenticate = require("./services/authentication/Authenticate");
-        await new Authenticate().setup(); // create guards that exists in authConfig
-    }
+    // async #defineAuthentication(){
+    //     const Authenticate = require("./services/authentication/Authenticate");
+    //     await new Authenticate().setup(); // create guards that exists in authConfig
+    // }
 
     #defineModels(){
         require('./models'); // this will run the index.js file so it will load all defined models (Dynamic Model Loader)

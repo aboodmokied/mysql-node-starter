@@ -8,18 +8,18 @@ class Authenticate{
     }
 
     async setup(){
-        const Guard = require("../../models/Guard");
-        const {guards}=authConfig;
-        for(let guardName in guards){
-            const guardObj=guards[guardName];
-            const count=await Guard.count({where:{id:guardObj.code}});
-            if(!count){
-                await Guard.create({
-                    id:guardObj.code,
-                    name:guardName,
-                })
-            }
-        }
+        // const Guard = require("../../models/Guard");
+        // const {guards}=authConfig;
+        // for(let guardName in guards){
+        //     const guardObj=guards[guardName];
+        //     const count=await Guard.count({where:{id:guardObj.code}});
+        //     if(!count){
+        //         await Guard.create({
+        //             id:guardObj.code,
+        //             name:guardName,
+        //         })
+        //     }
+        // }
     }
 
     withGuard(guard){
@@ -44,11 +44,10 @@ class Authenticate{
                 delete req.body.password;
                 delete req.body.guard;
                 const user=await model.findOne({
-                    where:{...req.body,guardId:guardObj.code},
-                    include:{model:require('../../models/Guard')}
+                    where:{...req.body,guard:this.#guard}
                 });
                 if(!user) return {passed:false,error:'wrong credentials'};
-                if(this.#guard != user.guard.name) return {passed:false,error:`${user.guard.name} can't login as ${this.#guard}`}; 
+                // if(this.#guard != user.guard) return {passed:false,error:`${user.guard} can't login as ${this.#guard}`}; 
                 if(!bcrypt.compareSync(reqPassword,user.password)) return {passed:false,error:'wrong password'};
                 // passed
                 req.session.isAuthenticated=true;
@@ -87,7 +86,7 @@ class Authenticate{
                     email,
                     name,
                     password:bcrypt.hashSync(password),
-                    guardId:guardObj.code
+                    guard:this.#guard
                 })
                 return {created:true,result:newUser};
             }else if(driver=='db'){ // use pure mysql 
