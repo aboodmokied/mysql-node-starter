@@ -7,21 +7,6 @@ class Authenticate{
         return Authenticate.instance??=this;
     }
 
-    async setup(){
-        // const Guard = require("../../models/Guard");
-        // const {guards}=authConfig;
-        // for(let guardName in guards){
-        //     const guardObj=guards[guardName];
-        //     const count=await Guard.count({where:{id:guardObj.code}});
-        //     if(!count){
-        //         await Guard.create({
-        //             id:guardObj.code,
-        //             name:guardName,
-        //         })
-        //     }
-        // }
-    }
-
     withGuard(guard){
         if(guard){
             this.#guard=guard;
@@ -73,6 +58,7 @@ class Authenticate{
 
     async register(req){
         // Before: guard and user data (if the user already exist) validation required
+        const Authorize = require("../authorization/Authorize");
         const guardObj=authConfig.guards[this.#guard];
         if(!guardObj) throw Error('something went wrong in authConfig, check it'); // error for the devs      
         if(guardObj.registeration=='global'){
@@ -88,6 +74,8 @@ class Authenticate{
                     password:bcrypt.hashSync(password),
                     guard:this.#guard
                 })
+
+                await new Authorize().applySystemRoles(newUser);
                 return {created:true,result:newUser};
             }else if(driver=='db'){ // use pure mysql 
                 throw Error('this feature not completed');

@@ -40,7 +40,8 @@ class Application{
         this.#defineMiddlewares();
         this.#defineRoutes();
         await this.#database.migrate();
-        // await this.#defineAuthentication();
+        await this.#defineAuthorization();
+        this.#applyAuthorization();
     }
 
 
@@ -80,7 +81,20 @@ class Application{
         // global error handler
         this.#app.use(Kernal.error);
     }
+    
+    async #defineAuthorization(){
+        const Authorize=require('./services/authorization/Authorize');
+        await new Authorize().setup();
+    }
+    #applyAuthorization(){
+        const Authorize=require('./services/authorization/Authorize');
+        const User = require("./models/User");
+        new Authorize().applyAuthorization(User);
+    }
 
+    // async #test(){
+
+    // }
 }
 
 module.exports=Application;

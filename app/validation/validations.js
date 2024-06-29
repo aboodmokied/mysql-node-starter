@@ -43,6 +43,6 @@ exports.validateGuard=(existsIn='body')=>{
         if(input in authConfig.guards){
             return true;
         }
-        return false;
+        throw new Error('Invalid Guard');
     })
 }

@@ -5,6 +5,7 @@ const authController=require('../controllers/authController');
 const pagesConfig = require('../config/pagesConfig');
 const isGuest = require('../services/authentication/middlewares/isGuest');
 const validateRequest = require('../validation/middlewares/validateRequest');
+const authorizePermission = require('../services/authorization/middlewares/authorizePermission');
 
 // login
 webRoutes.get(pagesConfig.authentication.login.route,isGuest,validateRequest('login-page'),authController.getLogin);
@@ -22,6 +23,11 @@ webRoutes.get('/authTest',isAuthenticated,(req,res,next)=>{
         session:req.session,
         user:req.user
     })
+})
+
+webRoutes.get('/authTest2',isAuthenticated,async(req,res,next)=>{
+    const roles=await req.user.getRoles();
+    res.send({status:true,user:req.user,roles});
 })
 
 module.exports=webRoutes;
