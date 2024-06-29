@@ -40,7 +40,8 @@ class Application{
         this.#defineMiddlewares();
         this.#defineRoutes();
         await this.#database.migrate();
-        await this.#defineAuthentication();
+        await this.#defineAuthorization();
+        this.#applyAuthorization();
     }
 
 
@@ -63,10 +64,10 @@ class Application{
         this.#app.use(Kernal.global);
     }
 
-    async #defineAuthentication(){
-        const Authenticate = require("./services/authentication/Authenticate");
-        await new Authenticate().setup(); // create guards that exists in authConfig
-    }
+    // async #defineAuthentication(){
+    //     const Authenticate = require("./services/authentication/Authenticate");
+    //     await new Authenticate().setup(); // create guards that exists in authConfig
+    // }
 
     #defineModels(){
         require('./models'); // this will run the index.js file so it will load all defined models (Dynamic Model Loader)
@@ -80,7 +81,20 @@ class Application{
         // global error handler
         this.#app.use(Kernal.error);
     }
+    
+    async #defineAuthorization(){
+        const Authorize=require('./services/authorization/Authorize');
+        await new Authorize().setup();
+    }
+    #applyAuthorization(){
+        const Authorize=require('./services/authorization/Authorize');
+        const User = require("./models/User");
+        new Authorize().applyAuthorization(User);
+    }
 
+    // async #test(){
+
+    // }
 }
 
 module.exports=Application;

@@ -16,7 +16,6 @@ exports.getLogin=(req,res,next)=>{
     })
 }
 exports.postLogin=tryCatch(async(req,res,next)=>{
-    // Before: guard and user data validation required.
     const {guard}=req.body;
     const {passed,error}=await new Authenticate().withGuard(guard).attemp(req);
     if(passed)return res.send({status:true,message:'Authenticated'});
@@ -29,7 +28,7 @@ exports.logout=(req,res,next)=>{
     const {guard}=req.user;
     new Authenticate().logout(req);
     req.user=undefined;
-    res.redirect(pagesConfig.authentication.login.path(guard.name));
+    res.redirect(pagesConfig.authentication.login.path(guard));
 };
 
 

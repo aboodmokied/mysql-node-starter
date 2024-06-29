@@ -14,6 +14,11 @@ module.exports={
         message:'Forbidden',
         statusCode:403
     },
+    BadRequest:{
+        type:"BadRequest",
+        message:'Bad Request',
+        statusCode:400
+    },
     Validation:{
         type:"Validation",
         message:'Invalid Input',
