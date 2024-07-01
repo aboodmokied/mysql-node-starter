@@ -30,4 +30,9 @@ webRoutes.get('/authTest2',isAuthenticated,async(req,res,next)=>{
     res.send({status:true,user:req.user,roles});
 })
 
+
+// cms
+    // role
+    webRoutes.get('/cms/role',)
+
 module.exports=webRoutes;

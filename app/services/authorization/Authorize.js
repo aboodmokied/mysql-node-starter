@@ -24,6 +24,7 @@ class Authorize{
     async setup(){
         await this.#definePermissions();
         await this.#defineRoles();
+        this.#defineRoleAggregations();
     }
 
     applyAuthorization(model){
@@ -221,6 +222,50 @@ class Authorize{
         }
     }
 
+    #defineRoleAggregations(){
+        // BEFORE: role - permissions validations
+        // class level
+        Role.assignPermission=async function(role,permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const roleInstance=await Role.findOne({where:{[Op.or]:[{name:role},{id:role}]}});
+            const count=await RoleHasPermission.count({where:{roleId:roleInstance.id,permissionId:permissionInstance.id}});
+            if(count)throw new BadRequestError();
+            const result=await roleInstance.addPermission(permissionInstance);
+            return result;
+        }
+        Role.revokePermission=async function(role,permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const roleInstance=await Role.findOne({where:{[Op.or]:[{name:role},{id:role}]}});
+            const result=await RoleHasPermission.destroy({where:{roleId:roleInstance.id,permissionId:permissionInstance.id}});
+            return result;
+        }
+        Role.getAvailablePermissions=async function(role){
+            const roleInstance=await Role.findOne({where:{[Op.or]:[{name:role},{id:role}]}});
+            const permissions=await Permission.findAll({
+                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permission WHERE roleId=${roleInstance.id}')`)}},
+            })
+            return permissions;
+        }
+        // instance level
+        Role.prototype.assignPermission=async function(permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const count=await RoleHasPermission.count({where:{roleId:this.id,permissionId:permissionInstance.id}});
+            if(count)throw new BadRequestError();
+            const result=await this.addPermission(permissionInstance);
+            return result;
+        }
+        Role.prototype.revokePermission=async function(role,permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const result=await RoleHasPermission.destroy({where:{roleId:this.id,permissionId:permissionInstance.id}});
+            return result;
+        }
+        Role.prototype.getAvailablePermissions=async function(){
+            const permissions=await Permission.findAll({
+                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permission WHERE roleId=${this.id}')`)}},
+            })
+            return permissions;
+        }
+    }
 
     // async #defineRolePermissions(){
     //     const mainRoles=authorizationConfig.mainRoles;
