@@ -5,6 +5,6 @@ const authorizePermission=(permission)=>{
         
         next();
     }
-};
+};  
 
 module.exports=authorizePermission;

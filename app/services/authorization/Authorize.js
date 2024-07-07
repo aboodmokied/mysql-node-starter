@@ -70,7 +70,7 @@ class Authorize{
             }
             model.getAvaliableRoles=async function(userId){
                 const roles=await Role.findAll({
-                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${userId}')`)}},
+                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${userId})`)}},
                 })
                 return roles;
             }
@@ -112,7 +112,7 @@ class Authorize{
             }
             model.prototype.getAvaliableRoles=async function(){
                 const roles=await Role.findAll({
-                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${this.id}')`)}},
+                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${this.id})`)}},
                 })
                 return roles;
             }
@@ -242,7 +242,7 @@ class Authorize{
         Role.getAvailablePermissions=async function(role){
             const roleInstance=await Role.findOne({where:{[Op.or]:[{name:role},{id:role}]}});
             const permissions=await Permission.findAll({
-                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permission WHERE roleId=${roleInstance.id}')`)}},
+                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permissions WHERE roleId=${roleInstance.id})`)}},
             })
             return permissions;
         }
@@ -261,7 +261,7 @@ class Authorize{
         }
         Role.prototype.getAvailablePermissions=async function(){
             const permissions=await Permission.findAll({
-                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permission WHERE roleId=${this.id}')`)}},
+                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permissions WHERE roleId=${this.id})`)}},
             })
             return permissions;
         }

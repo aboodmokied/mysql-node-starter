@@ -1,7 +1,7 @@
-const authConfig = require("../config/authConfig");
-const pagesConfig = require("../config/pagesConfig");
-const Authenticate = require("../services/authentication/Authenticate");
-const tryCatch = require("../util/tryCatch");
+const authConfig = require("../../config/authConfig");
+const pagesConfig = require("../../config/pagesConfig");
+const Authenticate = require("../../services/authentication/Authenticate");
+const tryCatch = require("../../util/tryCatch");
 
 
 exports.getLogin=(req,res,next)=>{

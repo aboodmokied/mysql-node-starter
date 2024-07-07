@@ -1,0 +1,22 @@
+<%- include('../components/top.ejs') %>
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-primary">
+        <div class="inner">
+            <h3><%= role.name %></h3>
+        </div>
+        </div>
+    </div>
+    <%- include('../components/permissionsTable.ejs',{
+        tableTitle:'Role Permissions',
+        type:'rolePermissions',
+        permissions:locals.rolePermissions
+    }) %>
+    <%- include('../components/permissionsTable.ejs',{
+        tableTitle:'Available Permissions',
+        type:'availablePermissions',
+        permissions:locals.availablePermissions
+    }) %>
+
+
+<%- include('../components/buttom.ejs') %>
