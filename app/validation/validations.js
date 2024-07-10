@@ -1,6 +1,7 @@
 const { body } = require("express-validator");
 const User = require("../models/User");
 const authConfig = require("../config/authConfig");
+const Role = require("../models/Role");
 
 exports.validateEmail=body('email').normalizeEmail().notEmpty().withMessage('Email Required').isEmail().withMessage('Invalid Email')
 exports.validateEmailExistence=body('email').normalizeEmail().custom(async(input)=>{
@@ -46,3 +47,10 @@ exports.validateGuard=(existsIn='body')=>{
         throw new Error('Invalid Guard');
     })
 }
+
+exports.validateRoleName=body('name').notEmpty().withMessage('Role Name Required').custom(async(name)=>{
+    const count=await Role.count({where:{name}});
+    if(count){
+        return Promise.reject('Role Exists')
+    }
+})

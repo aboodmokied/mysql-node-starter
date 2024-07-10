@@ -43,8 +43,11 @@ webRoutes.get('/authTest2',isAuthenticated,authorizePermission('testPermission2'
 // cms
     // role
     webRoutes.get('/cms/role',RoleController.index);
+    webRoutes.get('/cms/role/create',RoleController.create);
+    webRoutes.post('/cms/role',validateRequest('create-role'),RoleController.store);
     webRoutes.get('/cms/role/:roleId',RoleController.show);
     webRoutes.post('/cms/role/assignPermission',RoleController.assignPermission);
     webRoutes.post('/cms/role/revokePermission',RoleController.revokePermission);
+    webRoutes.delete('/cms/role/:roleId',RoleController.destroy);
 
 module.exports=webRoutes;

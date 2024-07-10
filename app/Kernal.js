@@ -12,7 +12,7 @@ const session=require('express-session');
 const differentiateRequests = require('./middlewares/differentiateRequests');
 const addWith = require('./middlewares/addWith');
 const appendLocals = require('./middlewares/appendLocals');
-
+const methodOverride=require('./middlewares/methodOverride');
 const Kernal={
     global:[
         requestLogger,
@@ -35,7 +35,7 @@ const Kernal={
         corsMiddleware()
     ],
     api:[limiter('api')],
-    web:[limiter('web'),verifyUser,addWith,appendLocals],
+    web:[limiter('web'),verifyUser,addWith,appendLocals,methodOverride],
     error:[ErrorHandler]
 }
 

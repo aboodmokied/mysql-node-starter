@@ -1,6 +1,7 @@
 const {validationResult}=require('express-validator');
 const ValidationError=require('../../Errors/ErrorTypes/ValidationError');
 const { loginValidation, loginPageValidation, registerPageValidation, registerValidation } = require('../schemas/authValidation');
+const { createRoleValidation } = require('../schemas/authorizationValidation');
 
 // handles validations result
 const checkResult=(req,res,next)=>{
@@ -26,6 +27,9 @@ const validateRequest=(type)=>{
             break;
         case 'register':
             validations=registerValidation;
+            break;
+        case 'create-role':
+            validations=createRoleValidation;
             break;
         default:
           throw Error('type required');
