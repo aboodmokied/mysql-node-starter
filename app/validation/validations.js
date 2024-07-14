@@ -2,6 +2,7 @@ const { body } = require("express-validator");
 const User = require("../models/User");
 const authConfig = require("../config/authConfig");
 const Role = require("../models/Role");
+const Permission = require("../models/Permission");
 
 exports.validateEmail=body('email').normalizeEmail().notEmpty().withMessage('Email Required').isEmail().withMessage('Invalid Email')
 exports.validateEmailExistence=body('email').normalizeEmail().custom(async(input)=>{
@@ -30,7 +31,6 @@ exports.validateLoginPassword=body('password')
 .notEmpty().withMessage('Password Required');
 
 exports.validateConfirmPassword=body('confirmPassword').custom((input,{req})=>{
-    console.log(input,req.body.password);
     if(input===req.body.password){
         return true;
     }
@@ -38,11 +38,17 @@ exports.validateConfirmPassword=body('confirmPassword').custom((input,{req})=>{
 });
 
 
-exports.validateGuard=(existsIn='body')=>{
+exports.validateGuard=(existsIn='body',validateGlobalRegistration=false)=>{
     const holder=require('express-validator')[existsIn];
     return holder('guard').notEmpty().withMessage('Guard Required').custom((input)=>{
         if(input in authConfig.guards){
-            return true;
+            if(!validateGlobalRegistration){
+                return true;
+            }
+            const guardObj=authConfig.guards[input];
+            if(guardObj.registeration=='global'){
+                return true;
+            }
         }
         throw new Error('Invalid Guard');
     })
@@ -52,5 +58,27 @@ exports.validateRoleName=body('name').notEmpty().withMessage('Role Name Required
     const count=await Role.count({where:{name}});
     if(count){
         return Promise.reject('Role Exists')
+    }
+})
+
+exports.validateRoleExistance=(existsIn='body')=>{
+    const holder=require('express-validator')[existsIn];
+    return holder('roleId').notEmpty().withMessage('Role id required').custom(async(roleId)=>{
+        const count=await Role.count({where:{id:roleId}});
+        if(!count){
+            return Promise.reject('Role not found');
+        }
+    })
+}
+exports.validatePermissionExistance=body('permissionId').notEmpty().withMessage('Permission id required').custom(async(permissionId)=>{
+    const count=await Permission.count({where:{id:permissionId}});
+    if(!count){
+        return Promise.reject('Permission not found');
+    }
+})
+exports.validateUserExistance=body('userId').notEmpty().withMessage('User id required').custom(async(userId)=>{
+    const count=await User.count({where:{id:userId}});
+    if(!count){
+        return Promise.reject('User not found');
     }
 })

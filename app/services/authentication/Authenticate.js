@@ -71,7 +71,7 @@ class Authenticate{
                 const newUser=await model.create({
                     email,
                     name,
-                    password:bcrypt.hashSync(password),
+                    password:bcrypt.hashSync(password,12),
                     guard:this.#guard
                 })
 

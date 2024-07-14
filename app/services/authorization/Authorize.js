@@ -6,6 +6,9 @@ const UserHasRole = require("../../models/UserHasRole");
 const authConfig = require("../../config/authConfig");
 const BadRequestError = require("../../Errors/ErrorTypes/BadRequestError");
 const Application = require("../../Application");
+const User = require("../../models/User");
+const bcrypt=require('bcryptjs');
+const SuperAdmin = require("../../models/SuperAdmin");
 
 class Authorize{
     #permissions=new Set();
@@ -25,6 +28,7 @@ class Authorize{
         await this.#definePermissions();
         await this.#defineRoles();
         this.#defineRoleAggregations();
+        await this.#defineSuperAdmin();
     }
 
     applyAuthorization(model){
@@ -138,7 +142,7 @@ class Authorize{
             })
             return permissions;
         } 
-        model.hasPermissionsViaRoles=async function(userId,permission){ // ***
+        model.hasPermissionViaRoles=async function(userId,permission){ // ***
             const permissionInstance=await Permission.findOne({
                 where:{[Op.or]:[{name:permission},{id:permission}]},
                 include:{
@@ -165,7 +169,7 @@ class Authorize{
             })
             return permissions;
         } 
-        model.prototype.hasPermissionsViaRoles=async function(permission){ // ***
+        model.prototype.hasPermissionViaRoles=async function(permission){ // ***
             const permissionInstance=await Permission.findOne({
                 where:{[Op.or]:[{name:permission},{id:permission}]},
                 include:{
@@ -267,20 +271,21 @@ class Authorize{
         }
     }
 
-    // async #defineRolePermissions(){
-    //     const mainRoles=authorizationConfig.mainRoles;
-    //     for(let role in mainRoles){
-    //         const roleObj=mainRoles[role];
-    //         const roleInstance=await Role.findOne({where:{name:role}});
-    //         for(let permission of rolePermissions){
-    //             const permissionInstance=await Permission.findOne({where:{name:permission}});
-    //             const count=await RoleHasPermission.count({where:{roleId:roleInstance.id,permissionId:permissionInstance.id}})
-    //             if(!count){
-    //                 await roleInstance.addPermission(permissionInstance);
-    //             }
-    //         }
-    //     }
-    // }
+    async #defineSuperAdmin(){
+        const count=await SuperAdmin.count();
+        if(!count){
+            const userAdmin=await User.create({
+                guard:'admin',
+                name:process.env.SUPER_ADMIN_NAME,
+                email:process.env.SUPER_ADMIN_EMAIL,
+                password:bcrypt.hashSync(process.env.SUPER_ADMIN_PASSWORD,12),
+            })
+            await this.applySystemRoles(userAdmin);
+            const superAdmin=await SuperAdmin.create({adminId:userAdmin.id});
+        }
+    }
+
+
 
 
 }

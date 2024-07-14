@@ -16,7 +16,6 @@ exports.index=tryCatch(async(req,res,next)=>{
 })
 
 exports.create=(req,res,next)=>{
-    req.session.pagePath=req.path;
     res.render('authorization/create-role',{
         pageTitle:'Create Role',
     })

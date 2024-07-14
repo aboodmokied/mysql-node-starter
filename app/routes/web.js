@@ -7,10 +7,12 @@ const validateRequest = require('../validation/middlewares/validateRequest');
 const authorizePermission = require('../services/authorization/middlewares/authorizePermission');
 
 const RoleController=require('../controllers/web/RoleController');
+const userController=require('../controllers/web/userController');
+const authorizeSuperAdmin = require('../services/authorization/middlewares/authorizeSuperAdmin');
 
 const webRoutes=express.Router();
 
-webRoutes.get('/',(req,res,next)=>{
+webRoutes.get('/',isAuthenticated,(req,res,next)=>{
     res.render('authorization/starter',{
         pageTitle:'Test'
     })
@@ -42,12 +44,14 @@ webRoutes.get('/authTest2',isAuthenticated,authorizePermission('testPermission2'
 
 // cms
     // role
-    webRoutes.get('/cms/role',RoleController.index);
-    webRoutes.get('/cms/role/create',RoleController.create);
-    webRoutes.post('/cms/role',validateRequest('create-role'),RoleController.store);
-    webRoutes.get('/cms/role/:roleId',RoleController.show);
-    webRoutes.post('/cms/role/assignPermission',RoleController.assignPermission);
-    webRoutes.post('/cms/role/revokePermission',RoleController.revokePermission);
-    webRoutes.delete('/cms/role/:roleId',RoleController.destroy);
+    webRoutes.get('/cms/role',isAuthenticated,authorizeSuperAdmin,RoleController.index);
+    webRoutes.get('/cms/role/create',isAuthenticated,authorizeSuperAdmin,RoleController.create);
+    webRoutes.post('/cms/role',isAuthenticated,authorizeSuperAdmin,validateRequest('create-role'),RoleController.store);
+    webRoutes.get('/cms/role/:roleId',isAuthenticated,authorizeSuperAdmin,validateRequest('role-page'),RoleController.show);
+    webRoutes.post('/cms/role/assignPermission',isAuthenticated,authorizeSuperAdmin,validateRequest('assign-role-permission'),RoleController.assignPermission);
+    webRoutes.post('/cms/role/revokePermission',isAuthenticated,authorizeSuperAdmin,validateRequest('revoke-role-permission'),RoleController.revokePermission);
+    webRoutes.delete('/cms/role/:roleId',isAuthenticated,authorizeSuperAdmin,validateRequest('delete-role'),RoleController.destroy);
+    // user
+    webRoutes.get('/cms/user/:guard/all',isAuthenticated,validateRequest('users-page'),userController.index);
 
 module.exports=webRoutes;

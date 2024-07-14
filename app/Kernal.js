@@ -13,6 +13,8 @@ const differentiateRequests = require('./middlewares/differentiateRequests');
 const addWith = require('./middlewares/addWith');
 const appendLocals = require('./middlewares/appendLocals');
 const methodOverride=require('./middlewares/methodOverride');
+const saveGetPageRequestPath = require('./middlewares/saveGetPageRequestPath');
+const userToLocals = require('./middlewares/userToLocals');
 const Kernal={
     global:[
         requestLogger,
@@ -35,7 +37,7 @@ const Kernal={
         corsMiddleware()
     ],
     api:[limiter('api')],
-    web:[limiter('web'),verifyUser,addWith,appendLocals,methodOverride],
+    web:[limiter('web'),verifyUser,addWith,appendLocals,methodOverride,saveGetPageRequestPath,userToLocals],
     error:[ErrorHandler]
 }
 

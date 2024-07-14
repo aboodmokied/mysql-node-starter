@@ -11,7 +11,7 @@ exports.loginValidation=[
 ]
 
 exports.registerPageValidation=[
-    validateGuard('param')
+    validateGuard('param',true)
 ]
 
 exports.registerValidation=[
