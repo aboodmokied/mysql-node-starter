@@ -1,3 +1,4 @@
+const AccessToken = require("../AccessToken");
 const Permission = require("../Permission");
 const Role = require("../Role");
 const RoleHasPermission = require("../RoleHasPermission");
@@ -34,3 +35,12 @@ Role.belongsToMany(User,{
 })
 
 
+// AccessToken - User
+
+User.hasMany(AccessToken,{
+    foreignKey:'userId',
+})
+
+AccessToken.belongsTo(User,{
+    foreignKey:'userId',
+})
