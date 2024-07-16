@@ -1,6 +1,7 @@
 const authConfig = require("../../config/authConfig");
 const pagesConfig = require("../../config/pagesConfig");
 const Authenticate = require("../../services/authentication/Authenticate");
+const Register = require("../../services/registration/Register");
 const tryCatch = require("../../util/tryCatch");
 
 
@@ -45,8 +46,6 @@ exports.getRegister=(req,res,next)=>{
 exports.postRegister=tryCatch(async(req,res,next)=>{
     // Before: guard and user data validation required, check if user exist.
     const {guard}=req.body;
-    const result=await new Authenticate().withGuard(guard).register(req);
-    // if(result.created)return res.status(201).send({status:true,result:result.result});
-    if(result.created)return res.with('old',{email:req.body.email}).redirect(pagesConfig.authentication.login.path(guard))
-    res.status(400).send({status:false,error:{message:result.error}});
+    const user=await new Register().withGuard(guard).create(req);
+    res.with('old',{email:req.body.email}).redirect(pagesConfig.authentication.login.path(guard))
 });

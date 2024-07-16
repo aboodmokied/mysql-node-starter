@@ -22,7 +22,7 @@ class ApiAuth{
                 throw new BadRequestError('Proccess Not Allowed');
             }
             const authClient=await AuthClient.findOne({where:{guard:this.guard}});
-            const token=jwt.sign({id:this.id},authClient.secret); // fffff.sssss.ttttt
+            const token=jwt.sign({id:this.id},authClient.secret); 
             const signature=token.split('.')[2];
             const expiresAt=Date.now() + 30*24*60*60*1000;
 
