@@ -1,6 +1,6 @@
 // for apply middlewares
 const express=require('express');
-const ErrorHandler = require('./middlewares/ErrorHandler');
+const errorHandler = require('./middlewares/errorHandler');
 const requestLogger = require('./middlewares/requestLogger');
 const limiter = require('./middlewares/limiter');
 const helmet=require('helmet');
@@ -15,6 +15,7 @@ const appendLocals = require('./middlewares/appendLocals');
 const methodOverride=require('./middlewares/methodOverride');
 const saveGetPageRequestPath = require('./middlewares/saveGetPageRequestPath');
 const userToLocals = require('./middlewares/userToLocals');
+const notFoundHandler = require('./middlewares/notFoundHandler');
 const Kernal={
     global:[
         requestLogger,
@@ -38,7 +39,7 @@ const Kernal={
     ],
     api:[limiter('api')],
     web:[limiter('web'),verifyUser,addWith,appendLocals,methodOverride,saveGetPageRequestPath,userToLocals],
-    error:[ErrorHandler]
+    error:[notFoundHandler,errorHandler]
 }
 
 module.exports=Kernal;
