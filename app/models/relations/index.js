@@ -1,6 +1,7 @@
 const Permission = require("../Permission");
 const Role = require("../Role");
 const RoleHasPermission = require("../RoleHasPermission");
+const SuperAdmin = require("../SuperAdmin");
 const User = require("../User");
 const UserHasRole = require("../UserHasRole");
 

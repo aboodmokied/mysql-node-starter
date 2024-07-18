@@ -6,6 +6,9 @@ const UserHasRole = require("../../models/UserHasRole");
 const authConfig = require("../../config/authConfig");
 const BadRequestError = require("../../Errors/ErrorTypes/BadRequestError");
 const Application = require("../../Application");
+const User = require("../../models/User");
+const bcrypt=require('bcryptjs');
+const SuperAdmin = require("../../models/SuperAdmin");
 
 class Authorize{
     #permissions=new Set();
@@ -24,6 +27,8 @@ class Authorize{
     async setup(){
         await this.#definePermissions();
         await this.#defineRoles();
+        this.#defineRoleAggregations();
+        await this.#defineSuperAdmin();
     }
 
     applyAuthorization(model){
@@ -69,7 +74,7 @@ class Authorize{
             }
             model.getAvaliableRoles=async function(userId){
                 const roles=await Role.findAll({
-                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${userId}')`)}},
+                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${userId})`)}},
                 })
                 return roles;
             }
@@ -111,7 +116,7 @@ class Authorize{
             }
             model.prototype.getAvaliableRoles=async function(){
                 const roles=await Role.findAll({
-                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${this.id}')`)}},
+                    where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT roleId FROM user_has_roles WHERE userId=${this.id})`)}},
                 })
                 return roles;
             }
@@ -137,7 +142,7 @@ class Authorize{
             })
             return permissions;
         } 
-        model.hasPermissionsViaRoles=async function(userId,permission){ // ***
+        model.hasPermissionViaRoles=async function(userId,permission){ // ***
             const permissionInstance=await Permission.findOne({
                 where:{[Op.or]:[{name:permission},{id:permission}]},
                 include:{
@@ -164,7 +169,7 @@ class Authorize{
             })
             return permissions;
         } 
-        model.prototype.hasPermissionsViaRoles=async function(permission){ // ***
+        model.prototype.hasPermissionViaRoles=async function(permission){ // ***
             const permissionInstance=await Permission.findOne({
                 where:{[Op.or]:[{name:permission},{id:permission}]},
                 include:{
@@ -221,21 +226,66 @@ class Authorize{
         }
     }
 
+    #defineRoleAggregations(){
+        // BEFORE: role - permissions validations
+        // class level
+        Role.assignPermission=async function(role,permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const roleInstance=await Role.findOne({where:{[Op.or]:[{name:role},{id:role}]}});
+            const count=await RoleHasPermission.count({where:{roleId:roleInstance.id,permissionId:permissionInstance.id}});
+            if(count)throw new BadRequestError();
+            const result=await roleInstance.addPermission(permissionInstance);
+            return result;
+        }
+        Role.revokePermission=async function(role,permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const roleInstance=await Role.findOne({where:{[Op.or]:[{name:role},{id:role}]}});
+            const result=await RoleHasPermission.destroy({where:{roleId:roleInstance.id,permissionId:permissionInstance.id}});
+            return result;
+        }
+        Role.getAvailablePermissions=async function(role){
+            const roleInstance=await Role.findOne({where:{[Op.or]:[{name:role},{id:role}]}});
+            const permissions=await Permission.findAll({
+                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permissions WHERE roleId=${roleInstance.id})`)}},
+            })
+            return permissions;
+        }
+        // instance level
+        Role.prototype.assignPermission=async function(permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const count=await RoleHasPermission.count({where:{roleId:this.id,permissionId:permissionInstance.id}});
+            if(count)throw new BadRequestError();
+            const result=await this.addPermission(permissionInstance);
+            return result;
+        }
+        Role.prototype.revokePermission=async function(role,permission){
+            const permissionInstance=await Permission.findOne({where:{[Op.or]:[{name:permission},{id:permission}]}});
+            const result=await RoleHasPermission.destroy({where:{roleId:this.id,permissionId:permissionInstance.id}});
+            return result;
+        }
+        Role.prototype.getAvailablePermissions=async function(){
+            const permissions=await Permission.findAll({
+                where:{id:{[Op.notIn]:Application.connection.literal(`(SELECT permissionId FROM role_has_permissions WHERE roleId=${this.id})`)}},
+            })
+            return permissions;
+        }
+    }
 
-    // async #defineRolePermissions(){
-    //     const mainRoles=authorizationConfig.mainRoles;
-    //     for(let role in mainRoles){
-    //         const roleObj=mainRoles[role];
-    //         const roleInstance=await Role.findOne({where:{name:role}});
-    //         for(let permission of rolePermissions){
-    //             const permissionInstance=await Permission.findOne({where:{name:permission}});
-    //             const count=await RoleHasPermission.count({where:{roleId:roleInstance.id,permissionId:permissionInstance.id}})
-    //             if(!count){
-    //                 await roleInstance.addPermission(permissionInstance);
-    //             }
-    //         }
-    //     }
-    // }
+    async #defineSuperAdmin(){
+        const count=await SuperAdmin.count();
+        if(!count){
+            const userAdmin=await User.create({
+                guard:'admin',
+                name:process.env.SUPER_ADMIN_NAME,
+                email:process.env.SUPER_ADMIN_EMAIL,
+                password:bcrypt.hashSync(process.env.SUPER_ADMIN_PASSWORD,12),
+            })
+            await this.applySystemRoles(userAdmin);
+            const superAdmin=await SuperAdmin.create({adminId:userAdmin.id});
+        }
+    }
+
+
 
 
 }

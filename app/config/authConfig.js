@@ -1,7 +1,7 @@
 
 module.exports={
     defaults:{
-        defaultGuard:'student'
+        defaultGuard:'student',
     },
     permissions:{
         testPermission:{

@@ -53,7 +53,7 @@ class Application{
         this.#app.set('views', path.join(rootPath, 'views'));
 
         this.#app.use(express.static(path.join(rootPath, 'public')));
-        this.#app.use(express.static(path.join(rootPath, 'node_modules', 'admin-lte')));
+        this.#app.use(express.static(path.join(rootPath, 'public', 'adminlte')));
     }
     #defineSecrityMiddlewares(){
         const Kernal = require("./Kernal");
