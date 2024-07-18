@@ -19,12 +19,12 @@ module.exports=(error,req,res,next)=>{
         errorLogger.error(`OperationalError: ${req.method} - ${req.url} - ${type} - ${statusCode} - ${message}`);
         if(error.type==="Validation"){ 
             const {errors}=error;
-                if(!req.isApiRequest){
-                    const {pagePath='/'}=req.session;
-                    req.session.pagePath=undefined;
-                    return res.status(error.statusCode).with('old',req.body).with('errors',errors).redirect(pagePath);
-                }
-                return res.status(error.statusCode).send({status:false,error:{type,message,errors}})
+            if(!req.isApiRequest){
+                const {pagePath='/'}=req.session;
+                req.session.pagePath=undefined;
+                return res.status(error.statusCode).with('old',req.body).with('errors',errors).redirect(pagePath);
+            }
+            return res.status(error.statusCode).send({status:false,error:{type,message,errors}})
             
             
         }
