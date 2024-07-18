@@ -2,14 +2,6 @@ const { DataTypes } = require("sequelize");
 const Application = require("../Application");
 
 const AccessToken=Application.connection.define('access_token',{
-    clientId:{
-        type:DataTypes.BIGINT(),
-        allowNull:false,
-     },
-     userId:{
-          type:DataTypes.BIGINT(),
-          allowNull:false,
-     },
      signature:{
         type:DataTypes.STRING,
         allowNull:false,
@@ -24,5 +16,6 @@ const AccessToken=Application.connection.define('access_token',{
       allowNull:false
      }
 })
+
 
 module.exports=AccessToken;

@@ -1,3 +1,7 @@
+const authConfig = require("../../config/authConfig");
+const AuthenticationError = require("../../Errors/ErrorTypes/AuthenticationError");
+const User = require("../../models/User");
+const ApiAuth = require("../../services/api-authentication/ApiAuth");
 const Register = require("../../services/registration/Register");
 const tryCatch = require("../../util/tryCatch");
 
@@ -10,5 +14,7 @@ exports.register=tryCatch(async(req,res,next)=>{
 });
 
 exports.login=tryCatch(async(req,res,next)=>{
-
+    const {guard}=req.body;
+    const token=await new ApiAuth().withGuard(guard).generateToken(req);
+    res.send({status:true,result:{token}})
 })

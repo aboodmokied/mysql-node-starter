@@ -3,13 +3,14 @@ const AuthClient=require('../../../models/AuthClient');
 const jwt=require('jsonwebtoken');
 const User = require("../../../models/User");
 const AuthenticationError = require("../../../Errors/ErrorTypes/AuthenticationError");
+const AccessToken = require("../../../models/AccessToken");
 
 const verifyToken=tryCatch(async(req,res,next)=>{
     const requestToken=req.headers.authorization;
-    if(requestToken.startsWith('Bearer')){
+    if(requestToken?.startsWith('Bearer')){
         const token=requestToken.split(' ')[1];
         const signature=token.split('.')[2];
-        const accessToken=await accessToken.findOne({where:{signature,revoked:false}});
+        const accessToken=await AccessToken.findOne({where:{signature,revoked:false}});
         if(accessToken){
             if(accessToken.expiresAt>=Date.now()){
                 const authClient=await AuthClient.findOne({where:{id:accessToken.clientId,revoked:false}});

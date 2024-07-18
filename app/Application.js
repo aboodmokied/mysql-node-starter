@@ -40,6 +40,8 @@ class Application{
         this.#defineMiddlewares();
         this.#defineRoutes();
         await this.#database.migrate();
+        await this.#defineApiAuth();
+        this.#applyApiAuth();
         await this.#defineAuthorization();
         this.#applyAuthorization();
     }
@@ -82,6 +84,15 @@ class Application{
         this.#app.use(Kernal.error);
     }
     
+    async #defineApiAuth(){
+        const ApiAuth = require("./services/api-authentication/ApiAuth");
+        await new ApiAuth().setup();
+    }
+    #applyApiAuth(){
+        const ApiAuth = require("./services/api-authentication/ApiAuth");
+        const User = require("./models/User");
+        new ApiAuth().applyApiAuth(User);
+    }
     async #defineAuthorization(){
         const Authorize=require('./services/authorization/Authorize');
         await new Authorize().setup();

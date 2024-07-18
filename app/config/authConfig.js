@@ -13,7 +13,7 @@ module.exports={
     }, 
     guards:{ // user types
         admin:{
-            drivers:['session'],
+            drivers:['session','token'],
             registeration:'by-admin', // (that means any user can create a student account) or admin: (only admin can create new accounts) 
             mainProvider:'main', // mainProvider: contain all users types
             subProvider:'adminDetails', //  subProvider: contain extra info about specific type of users
