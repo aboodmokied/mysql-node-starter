@@ -1,9 +1,9 @@
 const tryCatch = require("../../../util/tryCatch");
 const AuthClient=require('../../../models/AuthClient');
 const jwt=require('jsonwebtoken');
-const User = require("../../../models/User");
 const AuthenticationError = require("../../../Errors/ErrorTypes/AuthenticationError");
 const AccessToken = require("../../../models/AccessToken");
+const authConfig = require("../../../config/authConfig");
 
 const verifyToken=tryCatch(async(req,res,next)=>{
     const requestToken=req.headers.authorization;
@@ -22,7 +22,10 @@ const verifyToken=tryCatch(async(req,res,next)=>{
                         throw new AuthenticationError('Unathorized, Invalid Token');
                     }
                     if(payload?.id==accessToken.userId){
-                        const user=await User.findByPk(accessToken.userId);
+                        const {guard}=authClient;
+                        const guardObj=authConfig.guards[guard];
+                        const model=authConfig.providers[guardObj.provider].model;
+                        const user=await model.findByPk(accessToken.userId);
                         if(user){
                             req.user=user;
                             return next();

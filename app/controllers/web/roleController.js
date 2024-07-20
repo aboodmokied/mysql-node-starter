@@ -32,6 +32,7 @@ exports.show=tryCatch(async(req,res,next)=>{
     const role=await Role.findByPk(roleId);
     const rolePermissions=await role.getPermissions();
     const availablePermissions=await role.getAvailablePermissions();
+    req.session.pagePath=req.path;
     res.render('authorization/role-details',{
         pageTitle:'Role Details',
         rolePermissions,

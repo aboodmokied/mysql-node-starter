@@ -23,17 +23,16 @@ class Register{
         const guardObj=authConfig.guards[this.#guard];
         if(!guardObj) throw Error('something went wrong in authConfig, check it'); // error for the devs      
         if(guardObj.registeration=='global'){
-            const {mainProvider}=guardObj;
-            const providerObj=authConfig.providers[mainProvider];
+            const {provider}=guardObj;
+            const providerObj=authConfig.providers[provider];
             if(!providerObj) throw Error('something went wrong in authConfig, check it'); // error for the devs
             if(providerObj.driver=='Sequelize'){
                 const {model}=providerObj;
-                const {email,name,password}=req.body;
+                const {password}=req.body;
+                delete req.body.guard;
                 const newUser=await model.create({
-                    email,
-                    name,
+                    ...req.body,
                     password:bcrypt.hashSync(password,12),
-                    guard:this.#guard
                 })
 
                 await new Authorize().applySystemRoles(newUser);

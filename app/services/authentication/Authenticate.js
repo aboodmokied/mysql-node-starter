@@ -19,17 +19,16 @@ class Authenticate{
         const guardObj=authConfig.guards[this.#guard];
         if(!guardObj) throw Error('something went wrong in authConfig, check it'); // error for the devs
         if(guardObj.drivers.indexOf('session')!==-1){
-            const {mainProvider}=guardObj;
-            const providerObj=authConfig.providers[mainProvider];
+            const {provider}=guardObj;
+            const providerObj=authConfig.providers[provider];
             const {driver}=providerObj;
             if(driver=='Sequelize'){ // use Sequelize 
                 const {model}=providerObj;
                 // verify the user
                 const {password:reqPassword}=req.body;
                 delete req.body.password;
-                delete req.body.guard;
                 const user=await model.findOne({
-                    where:{...req.body,guard:this.#guard}
+                    where:{...req.body}
                 });
                 if(!user) return {passed:false,error:'wrong credentials'};
                 // if(this.#guard != user.guard) return {passed:false,error:`${user.guard} can't login as ${this.#guard}`}; 
@@ -37,6 +36,7 @@ class Authenticate{
                 // passed
                 req.session.isAuthenticated=true;
                 req.session.userId=user.id;
+                req.session.guard=this.#guard;
                 return {passed:true,error:null};
             }else if(driver=='db'){ // use pure mysql 
                 throw Error('this feature not completed');
@@ -56,37 +56,7 @@ class Authenticate{
         })
     }
 
-    async register(req){
-        // Before: guard and user data (if the user already exist) validation required
-        const Authorize = require("../authorization/Authorize");
-        const guardObj=authConfig.guards[this.#guard];
-        if(!guardObj) throw Error('something went wrong in authConfig, check it'); // error for the devs      
-        if(guardObj.registeration=='global'){
-            const {mainProvider}=guardObj;
-            const providerObj=authConfig.providers[mainProvider];
-            if(!providerObj) throw Error('something went wrong in authConfig, check it'); // error for the devs
-            if(providerObj.driver=='Sequelize'){
-                const {model}=providerObj;
-                const {email,name,password}=req.body;
-                const newUser=await model.create({
-                    email,
-                    name,
-                    password:bcrypt.hashSync(password,12),
-                    guard:this.#guard
-                })
-
-                await new Authorize().applySystemRoles(newUser);
-                return {created:true,result:newUser};
-            }else if(driver=='db'){ // use pure mysql 
-                throw Error('this feature not completed');
-            }else{
-                throw Error('something went wrong in authConfig, check it'); // error for the devs
-            }
-        }else{
-            return {created:false,error:'proccess not allowed'};
-        }
-
-    }
+    
 }
 
 module.exports=Authenticate;

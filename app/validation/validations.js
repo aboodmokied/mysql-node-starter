@@ -5,11 +5,16 @@ const Role = require("../models/Role");
 const Permission = require("../models/Permission");
 
 exports.validateEmail=body('email').normalizeEmail().notEmpty().withMessage('Email Required').isEmail().withMessage('Invalid Email')
-exports.validateEmailExistence=body('email').normalizeEmail().custom(async(input)=>{
-    const count=await User.count({where:{email:input}});
-    if(count){
-        return Promise.reject('Email already in use');
+exports.validateEmailExistence=body('email').normalizeEmail().custom(async(input,{req})=>{
+    const guardObj=authConfig.guards[req.body.guard];
+    if(!guardObj){
+        return Promise.reject('AuthConfig Error');
     }
+        const model=authConfig.providers[guardObj.provider]?.model;
+        const count=await model.count({where:{email:input}});
+        if(count){
+            return Promise.reject('Email already in use');
+        }
 })
 
 exports.validateName=body('name').notEmpty().withMessage('Username Required').isLength({max:30,min:3}).withMessage('Username length should be between 3 to 30')
@@ -76,9 +81,10 @@ exports.validatePermissionExistance=body('permissionId').notEmpty().withMessage(
         return Promise.reject('Permission not found');
     }
 })
-exports.validateUserExistance=body('userId').notEmpty().withMessage('User id required').custom(async(userId)=>{
-    const count=await User.count({where:{id:userId}});
-    if(!count){
-        return Promise.reject('User not found');
-    }
-})
+
+// exports.validateUserExistance=body('userId').notEmpty().withMessage('User id required').custom(async(userId)=>{
+//     const count=await User.count({where:{id:userId}});
+//     if(!count){
+//         return Promise.reject('User not found');
+//     }
+// })

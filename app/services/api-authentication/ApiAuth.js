@@ -60,7 +60,7 @@ class ApiAuth{
         if(!guardObj.drivers.includes('token')){
             throw new BadRequestError('Proccess Not Allowed');
         }
-        const model=authConfig.providers[guardObj.mainProvider]?.model;
+        const model=authConfig.providers[guardObj.provider]?.model;
         const user=await model.findOne({where:{...req.body}});
         if(!user)throw new AuthenticationError('Wrong Credintials');
         const isMatched=bcrypt.compareSync(password,user.password);

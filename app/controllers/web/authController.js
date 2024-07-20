@@ -9,6 +9,7 @@ exports.getLogin=(req,res,next)=>{
     // Before: guard and user data validation required.
     const guards=Object.keys(authConfig.guards).filter(guard=>authConfig.guards[guard].drivers.includes('session'));
     const {guard}=req.params;
+    req.session.pagePath=req.path;
     res.render(pagesConfig.authentication.login.page,{
         pageTitle:`${guard[0].toUpperCase()}${guard.slice(1)} Login`,
         guards,
@@ -36,6 +37,7 @@ exports.getRegister=(req,res,next)=>{
     // Before: guard and user data validation required.
     const {guard}=req.params;
     const guards=Object.keys(authConfig.guards).filter(guard=>authConfig.guards[guard].registeration=='global')
+    req.session.pagePath=req.path;
     res.render(pagesConfig.authentication.register.page,{
         pageTitle:`${guard[0].toUpperCase()}${guard.slice(1)} Register`,
         currentGuard:guard,
