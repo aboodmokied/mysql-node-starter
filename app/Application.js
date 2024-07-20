@@ -99,8 +99,11 @@ class Application{
     }
     #applyAuthorization(){
         const Authorize=require('./services/authorization/Authorize');
-        const User = require("./models/User");
-        new Authorize().applyAuthorization(User);
+        const Student = require("./models/Student");
+        const Admin = require("./models/Admin");
+        const authorize=new Authorize();
+        authorize.applyAuthorization(Admin);
+        authorize.applyAuthorization(Student);
     }
 
     // async #test(){

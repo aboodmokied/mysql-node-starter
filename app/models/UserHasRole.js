@@ -9,6 +9,10 @@ const UserHasRole=Application.connection.define('user_has_role',{
     userId:{
         type:DataTypes.BIGINT,
         allowNull:false
+    },
+    guard:{
+        type:DataTypes.STRING,
+        allowNull:false
     }
 },{
 

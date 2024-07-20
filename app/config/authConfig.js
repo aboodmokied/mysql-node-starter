@@ -1,5 +1,4 @@
-
-module.exports={
+const authConfig={
     defaults:{
         defaultGuard:'student',
     },
@@ -13,19 +12,19 @@ module.exports={
     }, 
     guards:{ // user types
         admin:{
+            name:'admin',
             drivers:['session','token'],
             registeration:'by-admin', // (that means any user can create a student account) or admin: (only admin can create new accounts) 
-            mainProvider:'main', // mainProvider: contain all users types
-            subProvider:'adminDetails', //  subProvider: contain extra info about specific type of users
+            provider:'admins', // mainProvider: contain all users types
             role:{
                 name:'admin',
             }
         },
         student:{
+            name:'student',
             drivers:['session','token'],
             registeration:'global', // (that means any user can create a student account) or admin: (only admin can create new accounts) 
-            mainProvider:'main', // mainProvider: contain all users types
-            subProvider:'studentDetails', //  subProvider: contain extra info about specific type of users
+            provider:'students', // mainProvider: contain all users types
             role:{
                 name:'student',
             }
@@ -33,19 +32,18 @@ module.exports={
         }
     },
     providers:{
-        main:{
+        admins:{
             driver:'Sequelize',
-            model:require("../models/User"), 
+            model:require("../models/Admin"), 
         },
-        adminDetails:{
+        students:{
             driver:'Sequelize',
-            model:'AdminDetails' 
+            model:require("../models/Student"), 
         },
-        studentDetails:{
-            driver:'Sequelize',
-            model:'StudentDetails' 
-        }
+        
     }
     
    
 }
+
+module.exports=authConfig;
