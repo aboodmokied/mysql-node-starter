@@ -1,6 +1,7 @@
 const authConfig = require("../../config/authConfig");
 const pagesConfig = require("../../config/pagesConfig");
 const Authenticate = require("../../services/authentication/Authenticate");
+const PasswordReset = require("../../services/password-reset/PasswordReset");
 const Register = require("../../services/registration/Register");
 const tryCatch = require("../../util/tryCatch");
 
@@ -51,3 +52,53 @@ exports.postRegister=tryCatch(async(req,res,next)=>{
     const user=await new Register().withGuard(guard).create(req);
     res.with('old',{email:req.body.email}).redirect(pagesConfig.authentication.login.path(guard))
 });
+
+
+
+// password reset
+/**
+ * GET => /auth/password-reset/guard
+ * POST => /auth/password-reset/request   => sent email
+ * GET => /auth/password-reset/token?email
+ * POST => /auth/password-reset
+ * */  
+
+exports.getPasswordResetRequest=(req,res,next)=>{
+    const {guard}=req.params;
+    req.session.pagePath=req.path;
+    res.render('auth/request-reset',{
+        pageTitle:'Request Password Reset',
+        guard
+    })
+};
+exports.postPasswordResetRequest=tryCatch(async(req,res,next)=>{
+    const {email,guard}=req.body;
+    const passReset=new PasswordReset();
+    const wasSent=await passReset.withEmail(email).withGuard(guard).request();
+    res.with('message','Mail was sent, check your email box').redirect(`/auth/password-reset/${guard}/request`)
+})
+
+exports.getPasswordReset=(req,res,next)=>{
+    const {token}=req.params;
+    const {email}=req.query;
+    const queryParams = req.query;
+    const fullPathWithQueryParams = `${req.path}?${new URLSearchParams(queryParams).toString()}`;
+    req.session.pagePath=fullPathWithQueryParams;
+    res.render('auth/reset',{
+        pageTitle:'Reset Password',
+        email,
+        token
+    });
+}
+
+
+exports.postPasswordReset=tryCatch(async(req,res,next)=>{
+    const updatedUser=await new PasswordReset().update(req);
+    res.redirect(`/auth/login/${updatedUser.guard}`);
+})
+
+
+
+
+
+

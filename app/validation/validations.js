@@ -1,10 +1,10 @@
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 const User = require("../models/User");
 const authConfig = require("../config/authConfig");
 const Role = require("../models/Role");
 const Permission = require("../models/Permission");
 
-exports.validateEmail=body('email').normalizeEmail().notEmpty().withMessage('Email Required').isEmail().withMessage('Invalid Email')
+exports.validateEmail=body('email').normalizeEmail().notEmpty().withMessage('Email Required').isEmail().withMessage('Invalid Email');
 exports.validateEmailExistence=body('email').normalizeEmail().custom(async(input,{req})=>{
     const guardObj=authConfig.guards[req.body.guard];
     if(!guardObj){
@@ -14,6 +14,18 @@ exports.validateEmailExistence=body('email').normalizeEmail().custom(async(input
         const count=await model.count({where:{email:input}});
         if(count){
             return Promise.reject('Email already in use');
+        }
+});
+
+exports.validateEmailIsFound=body('email').normalizeEmail().custom(async(input,{req})=>{
+    const guardObj=authConfig.guards[req.body.guard];
+    if(!guardObj){
+        return Promise.reject('AuthConfig Error');
+    }
+        const model=authConfig.providers[guardObj.provider]?.model;
+        const count=await model.count({where:{email:input}});
+        if(!count){
+            return Promise.reject('Email not found');
         }
 })
 
@@ -88,3 +100,6 @@ exports.validatePermissionExistance=body('permissionId').notEmpty().withMessage(
 //         return Promise.reject('User not found');
 //     }
 // })
+
+exports.normalizeEmailInQuery=query('email').normalizeEmail();
+exports.validateToken= body('token').notEmpty().withMessage('Token Required');

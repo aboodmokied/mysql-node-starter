@@ -9,6 +9,7 @@ const authorizePermission = require('../services/authorization/middlewares/autho
 const RoleController=require('../controllers/web/RoleController');
 const userController=require('../controllers/web/userController');
 const authorizeSuperAdmin = require('../services/authorization/middlewares/authorizeSuperAdmin');
+const verifyPassResetToken = require('../services/password-reset/middlewares/verifyPassResetToken');
 
 const webRoutes=express.Router();
 
@@ -41,6 +42,13 @@ webRoutes.get('/authTest2',isAuthenticated,authorizePermission('testPermission2'
     res.send({status:true,user:req.user,roles});
 })
 
+
+// pass reset
+webRoutes.get('/auth/password-reset/:guard/request',validateRequest('request-reset-page'),authController.getPasswordResetRequest);
+webRoutes.post('/auth/password-reset/request',validateRequest('request-reset'),authController.postPasswordResetRequest);
+
+webRoutes.get('/auth/password-reset/:token',validateRequest('reset-page'),verifyPassResetToken('url'),authController.getPasswordReset);
+webRoutes.post('/auth/password-reset',validateRequest('reset'),verifyPassResetToken('body'),authController.postPasswordReset);
 
 // cms
     // role
