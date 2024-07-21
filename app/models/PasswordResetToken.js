@@ -3,7 +3,7 @@ const Application = require("../Application");
 
 const PasswordResetToken=Application.connection.define('password_reset_token',{
     email:{
-        type:DataTypes.BIGINT,
+        type:DataTypes.STRING,
         allowNull:false
     },
     guard:{

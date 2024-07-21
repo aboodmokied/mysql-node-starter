@@ -34,7 +34,8 @@ const errorHandler=(error,req,res,next)=>{
         return res.status(error.statusCode).send({status:false,error:{type,message}});
     }
     // server error
-    errorLogger.error(`ServerError: 500 - ${error.stack}`); 
+    console.log(error);
+    // errorLogger.error(`ServerError: 500 - ${error.stack}`); 
     res.status(Server.statusCode).send({status:false,error:{type:Server.type,message:Server.message}});
 }
 

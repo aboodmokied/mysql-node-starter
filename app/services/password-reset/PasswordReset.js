@@ -2,6 +2,8 @@ const authConfig = require("../../config/authConfig");
 const { passReset } = require("../../config/securityConfig");
 const BadRequestError = require("../../Errors/ErrorTypes/BadRequestError");
 const PasswordResetToken = require("../../models/PasswordResetToken");
+const crypto=require('crypto');
+const bcrypt=require('bcryptjs');
 
 class PasswordReset{
     #email=null;
@@ -42,13 +44,28 @@ class PasswordReset{
     }
 
     #generateUrl(token){
-        return `${process.env.APP_URL}:${process.env.PORT}/password-reset/reset/${token}?email=${email}`;
+        return `${process.env.APP_URL}:${process.env.PORT||3000}/auth/password-reset/${token}?email=${this.#email}`;
     }
     #generateToken(){
         const token=crypto.randomBytes(32).toString('hex');
         return crypto.createHash('sha256').update(token).digest('hex');
     }
 
+
+    async update(req){
+        // everything was verified
+        const {email,token,password}=req.body;
+        // for more security
+        const resetToken=await PasswordResetToken.findOne({where:{token,email,revoked:false}});
+        if(!resetToken){
+            throw new BadRequestError('Invalid token');
+        }
+        // revoke all reset tokens for this user
+        await PasswordResetToken.update({revoked:true},{where:{guard:resetToken.guard,email:resetToken.email}});
+        // update password
+        const updatedUser=await req.targetUser.update({password:bcrypt.hashSync(password)});
+        return updatedUser;
+    }
 }
 
 module.exports=PasswordReset;
