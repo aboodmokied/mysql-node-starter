@@ -44,11 +44,11 @@ webRoutes.get('/authTest2',isAuthenticated,authorizePermission('testPermission2'
 
 
 // pass reset
-webRoutes.get('/auth/password-reset/:guard/request',authController.getPasswordResetRequest);
-webRoutes.post('/auth/password-reset/request',authController.postPasswordResetRequest);
+webRoutes.get('/auth/password-reset/:guard/request',validateRequest('request-reset-page'),authController.getPasswordResetRequest);
+webRoutes.post('/auth/password-reset/request',validateRequest('request-reset'),authController.postPasswordResetRequest);
 
-webRoutes.get('/auth/password-reset/:token',verifyPassResetToken('url'),authController.getPasswordReset);
-webRoutes.post('/auth/password-reset',verifyPassResetToken('body'),authController.postPasswordReset);
+webRoutes.get('/auth/password-reset/:token',validateRequest('reset-page'),verifyPassResetToken('url'),authController.getPasswordReset);
+webRoutes.post('/auth/password-reset',validateRequest('reset'),verifyPassResetToken('body'),authController.postPasswordReset);
 
 // cms
     // role

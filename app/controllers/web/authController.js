@@ -65,7 +65,7 @@ exports.postRegister=tryCatch(async(req,res,next)=>{
 
 exports.getPasswordResetRequest=(req,res,next)=>{
     const {guard}=req.params;
-    req.pagePath=req.path;
+    req.session.pagePath=req.path;
     res.render('auth/request-reset',{
         pageTitle:'Request Password Reset',
         guard
@@ -81,7 +81,9 @@ exports.postPasswordResetRequest=tryCatch(async(req,res,next)=>{
 exports.getPasswordReset=(req,res,next)=>{
     const {token}=req.params;
     const {email}=req.query;
-    req.session.pagePath=req.path;
+    const queryParams = req.query;
+    const fullPathWithQueryParams = `${req.path}?${new URLSearchParams(queryParams).toString()}`;
+    req.session.pagePath=fullPathWithQueryParams;
     res.render('auth/reset',{
         pageTitle:'Reset Password',
         email,

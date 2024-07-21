@@ -15,11 +15,12 @@ const verifyPassResetToken=(from='url')=>tryCatch(async(req,res,next)=>{
     }else{
         throw new Error('From value required');
     }
+    if(!email){
+        throw BadRequestError('Email Required');
+    }
     const passResetToken=await PasswordResetToken.findOne({where:{token,revoked:false}});
     if(passResetToken){
         if(email===passResetToken.email){
-            console.log(Date.now());
-            console.log(passResetToken.expiresAt);
             if(passResetToken.expiresAt<Date.now()){
                 throw new BadRequestError('token timeout');
             }

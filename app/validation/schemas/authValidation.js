@@ -1,4 +1,4 @@
-const { validateEmail, validateEmailExistence, validateName, validateGuard, validatePassword, validateConfirmPassword, validateRegisterPassword, validateLoginPassword } = require("../validations");
+const { validateEmail, validateEmailExistence, validateName, validateGuard, validatePassword, validateConfirmPassword, validateRegisterPassword, validateLoginPassword, validateEmailIsFound, validateToken, validateEmailAsQuery, normalizeEmailInQuery } = require("../validations");
 
 
 exports.loginPageValidation=[
@@ -23,3 +23,23 @@ exports.registerValidation=[
     validateConfirmPassword
 ]
 
+
+exports.requestResetPageValidation=[
+    validateGuard('param')
+];
+
+exports.requestResetValidation=[
+    validateGuard('body'),
+    validateEmailIsFound
+];
+
+exports.resetPageValidation=[ 
+    normalizeEmailInQuery
+];
+
+exports.resetValidation=[ // token email password
+    validateToken,
+    validateEmail,
+    validateRegisterPassword,
+    validateConfirmPassword
+];

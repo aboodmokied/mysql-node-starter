@@ -1,6 +1,6 @@
 const {validationResult}=require('express-validator');
 const ValidationError=require('../../Errors/ErrorTypes/ValidationError');
-const { loginValidation, loginPageValidation, registerPageValidation, registerValidation } = require('../schemas/authValidation');
+const { loginValidation, loginPageValidation, registerPageValidation, registerValidation, requestResetPageValidation, requestResetValidation, resetPageValidation, resetValidation } = require('../schemas/authValidation');
 const { createRoleValidation, assignRolePermissionValidation, revokeRolePermissionValidation, deleteRoleValidation, rolePageValidation } = require('../schemas/authorizationValidation');
 const { usersPageValidation } = require('../schemas/userValidation');
 
@@ -28,6 +28,18 @@ const validateRequest=(type)=>{
             break;
         case 'register':
             validations=registerValidation;
+            break;
+        case 'request-reset-page':
+            validations=requestResetPageValidation;
+            break;
+        case 'request-reset':
+            validations=requestResetValidation;
+            break;
+        case 'reset-page':
+            validations=resetPageValidation;
+            break;
+        case 'reset':
+            validations=resetValidation;
             break;
         case 'create-role':
             validations=createRoleValidation;
