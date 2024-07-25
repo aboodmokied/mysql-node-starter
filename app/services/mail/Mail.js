@@ -22,7 +22,7 @@ class Mail{
             this.#transporters[mailObj.service]=nodemailer.createTransport({
                 ...mailObj
             })
-             this.#transporters[mail].verify((error, success) => {
+             this.#transporters[mail.service].verify((error, success) => {
                 if (error) {
                     console.log(error);
                     throw new Error(`Error configuring transporter: ${mail}`);
@@ -46,6 +46,24 @@ class Mail{
                 subject,
                 text,
                 html
+            })
+            return info?.messageId ? true:false;
+        };
+        model.prototype.verifyEmail=async function(){
+            const {email}=this;
+            const service=email.split('@')[1]?.split('.')[0];
+            const transporter=new Mail().getTransporter(service);
+            if(!transporter){
+                throw new Error(`Transporter Not Found for this service: ${service}`)
+            }
+
+            const info=await transporter.sendMail({
+                from:transporter.options.auth.user,
+                to:email,
+                subject: 'Email Verification',
+                html: `<p>Hello ${this.name},</p>
+                    <p>Thank you for registering. Please click the link below to verify your email address:</p>
+                    <a href="${verificationLink}">Verify Email</a>`
             })
             return info?.messageId ? true:false;
         };

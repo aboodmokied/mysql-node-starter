@@ -100,5 +100,11 @@ exports.postPasswordReset=tryCatch(async(req,res,next)=>{
 
 
 
+// verify account
 
+exports.verifyEmail=tryCatch(async(req,res,next)=>{
+    await req.user.sendEmail({
+        
+    });
+})
 
