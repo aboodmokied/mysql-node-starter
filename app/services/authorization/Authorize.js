@@ -309,10 +309,10 @@ class Authorize{
         const count=await SuperAdmin.count();
         if(!count){
             const userAdmin=await Admin.create({
-                guard:'admin',
                 name:process.env.SUPER_ADMIN_NAME,
                 email:process.env.SUPER_ADMIN_EMAIL,
                 password:bcrypt.hashSync(process.env.SUPER_ADMIN_PASSWORD,12),
+                verified:true
             })
             await this.applySystemRoles(userAdmin);
             const superAdmin=await SuperAdmin.create({adminId:userAdmin.id});

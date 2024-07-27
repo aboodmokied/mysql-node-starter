@@ -1,28 +1,25 @@
 const { DataTypes } = require("sequelize");
 const Application = require("../Application");
 
-const Student=Application.connection.define('student',{
+const VerifyEmailToken=Application.connection.define('verify_email_token',{
     email:{
-        type:DataTypes.STRING,
-        allowNull:false,
-        unique:true
-    },
-    name:{
-        type:DataTypes.STRING(30),
-        allowNull:false,
-    },
-    password:{  
         type:DataTypes.STRING,
         allowNull:false
     },
     guard:{
         type:DataTypes.STRING,
-        defaultValue:'student'
+        allowNull:false
     },
-    verified:{
+    token:{
+        type:DataTypes.STRING,
+        allowNull:false,
+        unique:true
+    },
+    revoked:{
         type:DataTypes.BOOLEAN,
         defaultValue:false
     }
-})
 
-module.exports=Student;
+});
+
+module.exports=VerifyEmailToken;

@@ -24,6 +24,11 @@ module.exports={
         message:'Invalid Input',
         statusCode:400
     },
+    Verification:{
+        type:"Verification",
+        message:'Not Verified',
+        statusCode:403
+    },
     RateLimit:{
         type:"RateLimit",
         message:'Too many requests from this IP, please try again later',

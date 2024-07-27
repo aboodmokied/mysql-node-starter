@@ -18,6 +18,10 @@ const Admin=Application.connection.define('admin',{
     guard:{
         type:DataTypes.STRING,
         defaultValue:'admin'
+    },
+    verified:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false
     }
 })
 

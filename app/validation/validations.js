@@ -3,8 +3,23 @@ const User = require("../models/User");
 const authConfig = require("../config/authConfig");
 const Role = require("../models/Role");
 const Permission = require("../models/Permission");
+const { mails } = require("../config/mailConfig");
 
-exports.validateEmail=body('email').normalizeEmail().notEmpty().withMessage('Email Required').isEmail().withMessage('Invalid Email');
+exports.validateEmail=body('email').normalizeEmail().notEmpty().withMessage('Email Required').isEmail().withMessage('Invalid Email').custom((email)=>{
+    const service=email.split('@')[1]?.split('.')[0];
+    let valid=false;
+    for(let mail in mails){
+        const mailObj=mails[mail];
+        if(mailObj.service==service){
+            valid=true;
+            break;
+        }
+    }
+    if(!valid){
+        throw new Error(`Email type ${service} not supported`);
+    }
+    return true;
+});
 exports.validateEmailExistence=body('email').normalizeEmail().custom(async(input,{req})=>{
     const guardObj=authConfig.guards[req.body.guard];
     if(!guardObj){
