@@ -44,6 +44,8 @@ class Application{
         this.#applyApiAuth();
         await this.#defineAuthorization();
         this.#applyAuthorization();
+        this.#defineMailing();
+        this.#applyMailing();
     }
 
 
@@ -104,6 +106,18 @@ class Application{
         const authorize=new Authorize();
         authorize.applyAuthorization(Admin);
         authorize.applyAuthorization(Student);
+    }
+    #defineMailing(){
+        const Mail=require('./services/mail/Mail');
+        new Mail().setup();
+    }
+    #applyMailing(){
+        const Mail=require('./services/mail/Mail');
+        const Student = require("./models/Student");
+        const Admin = require("./models/Admin");
+        const mail=new Mail();
+        mail.applyMailing(Admin);
+        mail.applyMailing(Student);
     }
 
     // async #test(){

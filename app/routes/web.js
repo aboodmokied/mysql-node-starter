@@ -10,12 +10,14 @@ const RoleController=require('../controllers/web/RoleController');
 const userController=require('../controllers/web/userController');
 const authorizeSuperAdmin = require('../services/authorization/middlewares/authorizeSuperAdmin');
 const verifyPassResetToken = require('../services/password-reset/middlewares/verifyPassResetToken');
+const isVerified = require('../middlewares/isVerified');
 
 const webRoutes=express.Router();
 
-webRoutes.get('/',isAuthenticated,(req,res,next)=>{
-    res.render('authorization/starter',{
-        pageTitle:'Test'
+webRoutes.get('/',isAuthenticated,isVerified,(req,res,next)=>{
+    res.render('auth/message',{
+        pageTitle:'Test',
+        message:'Suiiii'
     })
 })
 
@@ -62,4 +64,7 @@ webRoutes.post('/auth/password-reset',validateRequest('reset'),verifyPassResetTo
     // user
     webRoutes.get('/cms/user/:guard/all',isAuthenticated,validateRequest('users-page'),userController.index);
 
+    // vrify email
+    webRoutes.get('/auth/verify-email/request',isAuthenticated,authController.verifyEmailRequest);
+    webRoutes.get('/auth/verify-email/:token',authController.verifyEmail);
 module.exports=webRoutes;

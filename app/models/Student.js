@@ -18,6 +18,10 @@ const Student=Application.connection.define('student',{
     guard:{
         type:DataTypes.STRING,
         defaultValue:'student'
+    },
+    verified:{
+        type:DataTypes.BOOLEAN,
+        defaultValue:false
     }
 })
 

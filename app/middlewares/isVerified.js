@@ -5,7 +5,8 @@ const isVerified=(req,res,next)=>{
     if(!req.user){
         throw new AuthenticationError();
     }
-    if(req.user.isVerified){
+    console.log(req.user);
+    if(req.user.verified){
         return next();
     }
     if(req.isApiRequest){

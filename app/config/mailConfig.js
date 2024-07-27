@@ -1,25 +1,25 @@
 const mailConfig={
     mails:{
-        gmail:{
-            service:'gmail',
-            auth:{
-                user:process.env.GMAIL_USER,
-                pass:process.env.GMAIL_PASS
-            },
-            host:'smtp.gmail.com',
-            port:587,
-            secure:false
-        },
-        // outlook:{
-        //     service:'hotmail',
+        // gmail:{
+        //     service:'gmail',
         //     auth:{
-        //         user:process.env.OUTLOOK_USER,
-        //         pass:process.env.OUTLOOK_PASS
+        //         user:process.env.GMAIL_USER,
+        //         pass:process.env.GMAIL_PASS
         //     },
-        //     host:'smtp.office365.com',
+        //     host:'smtp.gmail.com',
         //     port:587,
         //     secure:false
         // },
+        outlook:{
+            service:'hotmail',
+            auth:{
+                user:process.env.OUTLOOK_USER,
+                pass:process.env.OUTLOOK_PASS
+            },
+            host:'smtp.office365.com',
+            port:587,
+            secure:false
+        },
         // yahoo:{
         //     name:'yahoo',
         //     auth:{

@@ -18,10 +18,6 @@ const VerifyEmailToken=Application.connection.define('verify_email_token',{
     revoked:{
         type:DataTypes.BOOLEAN,
         defaultValue:false
-    },
-    expiresAt:{
-        type:DataTypes.BIGINT,
-        allowNull:false
     }
 
 });

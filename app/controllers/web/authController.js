@@ -1,5 +1,7 @@
 const authConfig = require("../../config/authConfig");
 const pagesConfig = require("../../config/pagesConfig");
+const BadRequestError = require("../../Errors/ErrorTypes/BadRequestError");
+const VerifyEmailToken = require("../../models/verifyEmailToken");
 const Authenticate = require("../../services/authentication/Authenticate");
 const PasswordReset = require("../../services/password-reset/PasswordReset");
 const Register = require("../../services/registration/Register");
@@ -102,9 +104,32 @@ exports.postPasswordReset=tryCatch(async(req,res,next)=>{
 
 // verify account
 
+exports.verifyEmailRequest=tryCatch(async(req,res,next)=>{
+    const {wasSent,message}=await req.user.verifyEmail();
+    res.render('auth/message',{
+        pageTitle:'Message',
+        message
+    })
+});
+
 exports.verifyEmail=tryCatch(async(req,res,next)=>{
-    await req.user.sendEmail({
-        
-    });
-})
+    const {token}=req.params;
+    const {email}=req.query;
+    const verifyEmailToken=await VerifyEmailToken.findOne({where:{token,revoked:false}});
+    if(verifyEmailToken){
+        if(verifyEmailToken.email==email){
+            const {guard}=verifyEmailToken;
+            const guardObj=authConfig.guards[guard];
+            const model=authConfig.providers[guardObj.provider]?.model;
+            if(model){
+                await model.update({verified:true},{where:{email,guard}});
+                res.redirect('/');
+            }
+        }
+    }
+    throw new BadRequestError('Invalid Token');
+});
+
+
+
 
