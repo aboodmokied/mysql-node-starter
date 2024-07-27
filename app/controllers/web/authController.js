@@ -1,6 +1,7 @@
 const authConfig = require("../../config/authConfig");
 const pagesConfig = require("../../config/pagesConfig");
 const BadRequestError = require("../../Errors/ErrorTypes/BadRequestError");
+const NotFoundError = require("../../Errors/ErrorTypes/NotFoundError");
 const VerifyEmailToken = require("../../models/verifyEmailToken");
 const Authenticate = require("../../services/authentication/Authenticate");
 const PasswordReset = require("../../services/password-reset/PasswordReset");
@@ -19,11 +20,27 @@ exports.getLogin=(req,res,next)=>{
         currentGuard:guard
     })
 }
+
+exports.getQuickLogin=tryCatch(async(req,res,next)=>{
+    if(!req.session.targetUser){
+        throw new BadRequestError();
+    };
+    const {email,guard,name}=req.session.targetUser;
+    req.session.pagePath=req.path;
+    res.render('auth/quick-login',{
+        pageTitle:'Quick Login',
+        email,
+        guard,
+        name
+    })
+
+});
+
 exports.postLogin=tryCatch(async(req,res,next)=>{
     const {guard}=req.body;
     const {passed,error}=await new Authenticate().withGuard(guard).attemp(req);
     if(passed)return res.redirect('/');
-    res.with('old',req.body).with('errors',[{msg:error}]).redirect(pagesConfig.authentication.login.path(guard))
+    res.with('old',req.body).with('errors',[{msg:error}]).redirect(req.session.pagePath);
 });
 
 
@@ -52,18 +69,15 @@ exports.postRegister=tryCatch(async(req,res,next)=>{
     // Before: guard and user data validation required, check if user exist.
     const {guard}=req.body;
     const user=await new Register().withGuard(guard).create(req);
-    res.with('old',{email:req.body.email}).redirect(pagesConfig.authentication.login.path(guard))
+    // res.with('old',{email:req.body.email}).redirect(pagesConfig.authentication.login.path(guard))
+    req.session.targetUser=user;
+    res.redirect('/auth/quick-login');
 });
 
 
 
 // password reset
-/**
- * GET => /auth/password-reset/guard
- * POST => /auth/password-reset/request   => sent email
- * GET => /auth/password-reset/token?email
- * POST => /auth/password-reset
- * */  
+ 
 
 exports.getPasswordResetRequest=(req,res,next)=>{
     const {guard}=req.params;
@@ -105,7 +119,7 @@ exports.postPasswordReset=tryCatch(async(req,res,next)=>{
 // verify account
 
 exports.verifyEmailRequest=tryCatch(async(req,res,next)=>{
-    const {wasSent,message}=await req.user.verifyEmail();
+    const message=await req.user.verifyEmail();
     res.render('auth/message',{
         pageTitle:'Message',
         message
@@ -122,8 +136,15 @@ exports.verifyEmail=tryCatch(async(req,res,next)=>{
             const guardObj=authConfig.guards[guard];
             const model=authConfig.providers[guardObj.provider]?.model;
             if(model){
-                await model.update({verified:true},{where:{email,guard}});
-                res.redirect('/');
+                // await model.update({verified:true},{where:{email,guard}});
+                const user=await model.findOne({where:{email,guard}});
+                if(!user){
+                    throw new NotFoundError('user not found');
+                }
+                await user.update({verified:true});
+                await verifyEmailToken.update({revoked:true});
+                req.session.targetUser=user;
+                res.redirect('/auth/quick-login');
             }
         }
     }

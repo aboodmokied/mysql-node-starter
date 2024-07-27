@@ -35,27 +35,26 @@ class Mail{
 
     applyMailing(model){
         // object level
-        model.prototype.sendEmail=async function({ subject, text, html}){
+        model.prototype.sendEmail=async function({ subject,html}){
             const {email}=this;
             const service=email.split('@')[1]?.split('.')[0];
             const transporter=new Mail().getTransporter(service);
             if(!transporter){
                 throw new Error(`Transporter Not Found for this service: ${service}`)
             }
-            const info=await transporter.sendMail({
+            transporter.sendMail({
                 from:transporter.options.auth.user,
                 to:email,
                 subject,
-                text,
                 html
             })
-            return info?.messageId ? true:false;
+            return true;
         };
         model.prototype.verifyEmail=async function(){
             const {email,guard}=this;
             const count=await VerifyEmailToken.count({where:{email,guard,revoked:false}});
             if(count){
-                return {wasSent:false,message:'Verification message already sent, check your email.'}
+                return 'Verification message already sent, check your email.'
             }
             const service=email.split('@')[1]?.split('.')[0];
             const transporter=new Mail().getTransporter(service);
@@ -71,7 +70,7 @@ class Mail{
                 guard,
                 token:hashedToken,
             });
-            const info=await transporter.sendMail({
+            transporter.sendMail({
                 from:transporter.options.auth.user,
                 to:email,
                 subject: 'Email Verification',
@@ -79,31 +78,30 @@ class Mail{
                     <p>Thank you for registering. Please click the link below to verify your email address:</p>
                     <p>${url}</p>`
             })
-            if(!info){
-                throw new Error('Something went wrong when sending email');
-            }
-            return {wasSent:true,message:'Verifivation message was sent, check your email'};
+            // if(!info){
+            //     throw new Error('Something went wrong when sending email');
+            // }
+            return 'Verifivation message was sent, check your email';
         };
         // class level
-        model.sendEmail=async function(userId,{subject, text, html}){
-            const user=await model.findByPk(userId);
+        model.sendEmail=async function(email,{subject,html}){
+            const user=await model.findOne({where:{email}});
             if(!user){
-                throw new NotFoundError(`user with id {${userId}} not found`);
+                throw new NotFoundError(`user with id {${email}} not found`);
             }
-            const {email}=user;
             const service=email.split('@')[1]?.split('.')[0];
             const transporter=new Mail().getTransporter(service);
             if(!transporter){
                 throw new Error(`Transporter Not Found for this service: ${service}`)
             }
-            const info=await transporter.sendMail({
+            transporter.sendMail({
                 from:transporter.options.auth.user,
                 to:email,
                 subject,
-                text,
                 html
             })
-            return info?.messageId ? true:false;
+            // return info?.messageId ? true:false;
+            return true;
         };
     }
 }

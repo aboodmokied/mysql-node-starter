@@ -40,6 +40,14 @@ class PasswordReset{
         });
         const url=this.#generateUrl(token);
         console.log(url);
+        const guardObj=authConfig.guards[this.#guard];
+        const model=authConfig.providers[guardObj.provider].model;
+        model.sendEmail(this.#email,{
+            subject: 'Password Reset',
+            html: `<p>You requested a password reset. Click the link below to reset your password:</p>
+            <p>${url}</p>
+            <p>If you did not request a password reset, please ignore this email.</p>`
+        }) 
         return true;
     }
 

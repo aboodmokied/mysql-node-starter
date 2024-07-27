@@ -23,6 +23,7 @@ webRoutes.get('/',isAuthenticated,isVerified,(req,res,next)=>{
 
 // login
 webRoutes.get(pagesConfig.authentication.login.route,isGuest,validateRequest('login-page'),authController.getLogin);
+webRoutes.get('/auth/quick-login',isGuest,authController.getQuickLogin);
 webRoutes.post('/auth/login',isGuest,validateRequest('login'),authController.postLogin);
 
 // register
