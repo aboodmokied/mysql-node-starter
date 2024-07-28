@@ -22,7 +22,8 @@ exports.login=tryCatch(async(req,res,next)=>{
 exports.postPasswordResetRequest=tryCatch(async(req,res,next)=>{
     const {email,guard}=req.body;
     const passReset=new PasswordReset();
-    const wasSent=await passReset.withEmail(email).withGuard(guard).request();
+    // const wasSent=await passReset.withEmail(email).withGuard(guard).request(process.env.FRONT_HOST);
+    const wasSent=await passReset.withEmail(email).withGuard(guard).request('www.my-front.com');
     res.send({status:true,result:{
         message:'Mail was sent, check your email box'
     }})
@@ -39,7 +40,8 @@ exports.postPasswordReset=tryCatch(async(req,res,next)=>{
 
 // verify email
 exports.verifyEmailRequest=tryCatch(async(req,res,next)=>{
-    const message=await req.user.verifyEmail();
+    // const message=await req.user.verifyEmail(process.env.FRONT_HOST);
+    const message=await req.user.verifyEmail('www.my-front.com');
     res.send({status:true,result:{
         message
     }})

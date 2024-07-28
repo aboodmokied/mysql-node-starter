@@ -3,6 +3,7 @@ const {Server} = require("../config/errorConfig");
 const { errorLogger } = require("../logging/Logger");
 
 const errorHandler=(error,req,res,next)=>{
+    console.log(error);
     // custom error
     if(error instanceof AppError){
         // check guard param not found..
