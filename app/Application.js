@@ -39,9 +39,9 @@ class Application{
         this.#defineSettings();
         this.#defineMiddlewares();
         this.#defineRoutes();
-        await this.#database.migrate();
-        await this.#defineApiAuth();
         this.#applyApiAuth();
+        await this.#database.migrate(); // sync database
+        await this.#defineApiAuth();
         await this.#defineAuthorization();
         this.#applyAuthorization();
         this.#defineMailing();

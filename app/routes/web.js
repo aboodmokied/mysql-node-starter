@@ -11,6 +11,7 @@ const userController=require('../controllers/web/userController');
 const authorizeSuperAdmin = require('../services/authorization/middlewares/authorizeSuperAdmin');
 const verifyPassResetToken = require('../services/password-reset/middlewares/verifyPassResetToken');
 const isVerified = require('../middlewares/isVerified');
+const VerifyEmailToken = require('../models/verifyEmailToken');
 
 const webRoutes=express.Router();
 
@@ -67,5 +68,5 @@ webRoutes.post('/auth/password-reset',validateRequest('reset'),verifyPassResetTo
 
     // vrify email
     webRoutes.get('/auth/verify-email/request',isAuthenticated,authController.verifyEmailRequest);
-    webRoutes.get('/auth/verify-email/:token',validateRequest('verify-email'),authController.verifyEmail);
+    webRoutes.get('/auth/verify-email/:token',validateRequest('verify-email'),VerifyEmailToken,authController.verifyEmail);
 module.exports=webRoutes;

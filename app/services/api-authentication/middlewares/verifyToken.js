@@ -27,6 +27,7 @@ const verifyToken=tryCatch(async(req,res,next)=>{
                         const model=authConfig.providers[guardObj.provider].model;
                         const user=await model.findByPk(accessToken.userId);
                         if(user){
+                            console.log('5');
                             req.user=user;
                             return next();
                         }

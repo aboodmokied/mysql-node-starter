@@ -28,7 +28,7 @@ class PasswordReset{
         return this;
     }
 
-    async request(){
+    async request(hostUrl){
         const token=this.#generateToken();
         const expiresAt=Date.now() + passReset.expiresAfter * 60 * 1000;
         await PasswordResetToken.update({revoked:true},{where:{email:this.#email,guard:this.#guard}});
@@ -38,8 +38,7 @@ class PasswordReset{
             expiresAt,
             guard:this.#guard
         });
-        const url=this.#generateUrl(token);
-        console.log(url);
+        const url=this.#generateUrl(token,hostUrl);
         const guardObj=authConfig.guards[this.#guard];
         const model=authConfig.providers[guardObj.provider].model;
         model.sendEmail(this.#email,{
@@ -51,8 +50,10 @@ class PasswordReset{
         return true;
     }
 
-    #generateUrl(token){
-        return `${process.env.APP_URL}:${process.env.PORT||3000}/auth/password-reset/${token}?email=${this.#email}`;
+    #generateUrl(token,hostUrl){
+        return hostUrl
+        ?`${hostUrl}/password-reset/${token}?email=${this.#email}`
+        :`${process.env.APP_URL}:${process.env.PORT||3000}/auth/password-reset/${token}?email=${this.#email}`;
     }
     #generateToken(){
         const token=crypto.randomBytes(32).toString('hex');

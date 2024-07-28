@@ -1,7 +1,5 @@
-const authConfig = require("../../config/authConfig");
-const AuthenticationError = require("../../Errors/ErrorTypes/AuthenticationError");
-const User = require("../../models/User");
 const ApiAuth = require("../../services/api-authentication/ApiAuth");
+const PasswordReset = require("../../services/password-reset/PasswordReset");
 const Register = require("../../services/registration/Register");
 const tryCatch = require("../../util/tryCatch");
 
@@ -18,3 +16,40 @@ exports.login=tryCatch(async(req,res,next)=>{
     const token=await new ApiAuth().withGuard(guard).generateToken(req);
     res.send({status:true,result:{token}})
 })
+
+
+// pass reset
+exports.postPasswordResetRequest=tryCatch(async(req,res,next)=>{
+    const {email,guard}=req.body;
+    const passReset=new PasswordReset();
+    // const wasSent=await passReset.withEmail(email).withGuard(guard).request(process.env.FRONT_HOST);
+    const wasSent=await passReset.withEmail(email).withGuard(guard).request('www.my-front.com');
+    res.send({status:true,result:{
+        message:'Mail was sent, check your email box'
+    }})
+});
+
+exports.postPasswordReset=tryCatch(async(req,res,next)=>{
+    // BEFORE: verifyPasswordResetToken Middleware
+    const updatedUser=await new PasswordReset().update(req);
+    res.send({status:true,result:{
+        message:'Password Updated Succefully',
+        user:updatedUser
+    }})
+});
+
+// verify email
+exports.verifyEmailRequest=tryCatch(async(req,res,next)=>{
+    // const message=await req.user.verifyEmail(process.env.FRONT_HOST);
+    const message=await req.user.verifyEmail('www.my-front.com');
+    res.send({status:true,result:{
+        message
+    }})
+});
+
+exports.verifyEmail=(req,res,next)=>{
+    res.send({status:true,result:{
+        message:'Email verified',
+        user:req.targetUser
+    }});   
+};
