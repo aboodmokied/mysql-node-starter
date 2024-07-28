@@ -67,5 +67,5 @@ webRoutes.post('/auth/password-reset',validateRequest('reset'),verifyPassResetTo
 
     // vrify email
     webRoutes.get('/auth/verify-email/request',isAuthenticated,authController.verifyEmailRequest);
-    webRoutes.get('/auth/verify-email/:token',authController.verifyEmail);
+    webRoutes.get('/auth/verify-email/:token',validateRequest('verify-email'),authController.verifyEmail);
 module.exports=webRoutes;

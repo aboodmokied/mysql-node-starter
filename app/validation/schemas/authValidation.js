@@ -43,3 +43,8 @@ exports.resetValidation=[ // token email password
     validateRegisterPassword,
     validateConfirmPassword
 ];
+
+
+exports.verifyEmailValidation=[
+    normalizeEmailInQuery
+];
