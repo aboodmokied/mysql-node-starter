@@ -95,6 +95,7 @@ exports.postPasswordResetRequest=tryCatch(async(req,res,next)=>{
 })
 
 exports.getPasswordReset=(req,res,next)=>{
+    // BEFORE: verifyPasswordResetToken Middleware
     const {token}=req.params;
     const {email}=req.query;
     const queryParams = req.query;
@@ -110,7 +111,8 @@ exports.getPasswordReset=(req,res,next)=>{
 
 exports.postPasswordReset=tryCatch(async(req,res,next)=>{
     const updatedUser=await new PasswordReset().update(req);
-    res.redirect(`/auth/login/${updatedUser.guard}`);
+    req.session.targetUser=updatedUser;
+    res.redirect('/auth/quick-login');
 })
 
 
@@ -127,28 +129,30 @@ exports.verifyEmailRequest=tryCatch(async(req,res,next)=>{
 });
 
 exports.verifyEmail=tryCatch(async(req,res,next)=>{
-    const {token}=req.params;
-    const {email}=req.query;
-    const verifyEmailToken=await VerifyEmailToken.findOne({where:{token,revoked:false}});
-    if(verifyEmailToken){
-        if(verifyEmailToken.email==email){
-            const {guard}=verifyEmailToken;
-            const guardObj=authConfig.guards[guard];
-            const model=authConfig.providers[guardObj.provider]?.model;
-            if(model){
-                // await model.update({verified:true},{where:{email,guard}});
-                const user=await model.findOne({where:{email,guard}});
-                if(!user){
-                    throw new NotFoundError('user not found');
-                }
-                await user.update({verified:true});
-                await verifyEmailToken.update({revoked:true});
-                req.session.targetUser=user;
-                res.redirect('/auth/quick-login');
-            }
-        }
-    }
-    throw new BadRequestError('Invalid Token');
+    // const {token}=req.params;
+    // const {email}=req.query;
+    // const verifyEmailToken=await VerifyEmailToken.findOne({where:{token,revoked:false}});
+    // if(verifyEmailToken){
+    //     if(verifyEmailToken.email==email){
+    //         const {guard}=verifyEmailToken;
+    //         const guardObj=authConfig.guards[guard];
+    //         const model=authConfig.providers[guardObj.provider]?.model;
+    //         if(model){
+    //             // await model.update({verified:true},{where:{email,guard}});
+    //             const user=await model.findOne({where:{email,guard}});
+    //             if(!user){
+    //                 throw new NotFoundError('user not found');
+    //             }
+    //             await user.update({verified:true});
+    //             await verifyEmailToken.update({revoked:true});
+    //             req.session.targetUser=user;
+                // res.redirect('/auth/quick-login');
+            // }
+        // }
+    // }
+    // throw new BadRequestError('Invalid Token');
+    req.session.targetUser=req.targetUser;
+    res.redirect('/auth/quick-login');
 });
 
 

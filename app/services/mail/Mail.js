@@ -50,7 +50,7 @@ class Mail{
             })
             return true;
         };
-        model.prototype.verifyEmail=async function(){
+        model.prototype.verifyEmail=async function(url){
             const {email,guard}=this;
             const count=await VerifyEmailToken.count({where:{email,guard,revoked:false}});
             if(count){
@@ -63,7 +63,7 @@ class Mail{
             }
             const token=crypto.randomBytes(32).toString('hex');
             const hashedToken=crypto.createHash('sha256').update(token).digest('hex');
-            const url=`${process.env.APP_URL}:${process.env.PORT||3000}/auth/verify-email/${hashedToken}?email=${email}`
+            const url=`${url ?? process.env.APP_URL}:${url?(process.env.PORT||3000):''}/auth/verify-email/${hashedToken}?email=${email}`
             await VerifyEmailToken.update({revoked:true},{where:{email,guard}})            
             const verifyEmailToken=await VerifyEmailToken.create({
                 email,
