@@ -1,5 +1,6 @@
 const express=require('express');
 const isAuthenticated = require('../services/authentication/middlewares/isAuthenticated');
+const oAuthController=require('../controllers/oAuthController');
 const authController=require('../controllers/web/authController');
 const pagesConfig = require('../config/pagesConfig');
 const isGuest = require('../services/authentication/middlewares/isGuest');
@@ -11,7 +12,7 @@ const userController=require('../controllers/web/userController');
 const authorizeSuperAdmin = require('../services/authorization/middlewares/authorizeSuperAdmin');
 const verifyPassResetToken = require('../services/password-reset/middlewares/verifyPassResetToken');
 const isVerified = require('../middlewares/isVerified');
-const VerifyEmailToken = require('../models/verifyEmailToken');
+const verifyEmailToken = require('../services/mail/middlewares/verifyEmailToken');
 
 const webRoutes=express.Router();
 
@@ -26,6 +27,11 @@ webRoutes.get('/',isAuthenticated,isVerified,(req,res,next)=>{
 webRoutes.get(pagesConfig.authentication.login.route,isGuest,validateRequest('login-page'),authController.getLogin);
 webRoutes.get('/auth/quick-login',isGuest,authController.getQuickLogin);
 webRoutes.post('/auth/login',isGuest,validateRequest('login'),authController.postLogin);
+
+// Oauth
+webRoutes.get('/auth/google/:process/:guard',oAuthController.googleAuthRequest);
+webRoutes.get('/api/auth/google/callback',oAuthController.googleAuthResponse);
+
 
 // register
 webRoutes.get(pagesConfig.authentication.register.route,isGuest,validateRequest('register-page'),authController.getRegister);
@@ -68,5 +74,5 @@ webRoutes.post('/auth/password-reset',validateRequest('reset'),verifyPassResetTo
 
     // vrify email
     webRoutes.get('/auth/verify-email/request',isAuthenticated,authController.verifyEmailRequest);
-    webRoutes.get('/auth/verify-email/:token',validateRequest('verify-email'),VerifyEmailToken,authController.verifyEmail);
+    webRoutes.get('/auth/verify-email/:token',validateRequest('verify-email'),verifyEmailToken,authController.verifyEmail);
 module.exports=webRoutes;

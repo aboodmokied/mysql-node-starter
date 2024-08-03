@@ -92,8 +92,11 @@ class Application{
     }
     #applyApiAuth(){
         const ApiAuth = require("./services/api-authentication/ApiAuth");
-        const User = require("./models/User");
-        new ApiAuth().applyApiAuth(User);
+        const Student = require("./models/Student");
+        const Admin = require("./models/Admin");
+        const apiAuth=new ApiAuth();
+        apiAuth.applyApiAuth(Student);
+        apiAuth.applyApiAuth(Admin);
     }
     async #defineAuthorization(){
         const Authorize=require('./services/authorization/Authorize');

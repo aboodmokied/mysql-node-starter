@@ -39,8 +39,10 @@ exports.getQuickLogin=tryCatch(async(req,res,next)=>{
 exports.postLogin=tryCatch(async(req,res,next)=>{
     const {guard}=req.body;
     const {passed,error}=await new Authenticate().withGuard(guard).attemp(req);
-    if(passed)return res.redirect('/');
-    res.with('old',req.body).with('errors',[{msg:error}]).redirect(req.session.pagePath);
+    if(!passed){
+        return res.with('old',req.body).with('errors',[{msg:error}]).redirect(req.session.pagePath);
+    }
+    res.redirect('/');
 });
 
 
