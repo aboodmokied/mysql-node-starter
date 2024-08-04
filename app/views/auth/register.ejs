@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="hold-transition register-page">
 <div class="register-box">
@@ -73,7 +74,12 @@
           </div>
         </div>
       </form>
-
+      <hr>
+      <div class="social-auth-links text-center mt-2 mb-3">
+          <a href="/auth/google/register/<%= locals.currentGuard %>" class="btn btn-block btn-danger">
+            <i class="fa-brands fa-google"></i> Register using Gmail
+          </a>
+      </div>
    
 
       <a href="/auth/login/<%= locals.currentGuard %>" class="text-center">I already have a membership</a>

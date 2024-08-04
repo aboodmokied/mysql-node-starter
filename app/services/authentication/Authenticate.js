@@ -1,5 +1,6 @@
 const authConfig = require("../../config/authConfig");
 const bcrypt=require('bcryptjs');
+const ValidationError = require("../../Errors/ErrorTypes/ValidationError");
 
 class Authenticate{
     #guard=authConfig.defaults.defaultGuard;
@@ -31,6 +32,9 @@ class Authenticate{
                     where:{...req.body}
                 });
                 if(!user) return {passed:false,error:'wrong credentials'};
+                if(user.googleOAuth){
+                    throw new ValidationError([{msg:'this user registered via google gmail, try to login via gmail'}]);
+                }
                 // if(this.#guard != user.guard) return {passed:false,error:`${user.guard} can't login as ${this.#guard}`}; 
                 if(!bcrypt.compareSync(reqPassword,user.password)) return {passed:false,error:'wrong password'};
                 // passed

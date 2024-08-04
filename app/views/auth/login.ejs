@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
@@ -49,7 +50,12 @@
           <!-- /.col -->
         </div>
       </form>
-   
+      <hr>
+      <div class="social-auth-links text-center mt-2 mb-3">
+          <a href="/auth/google/login/<%= locals.currentGuard %>" class="btn btn-block btn-danger">
+            <i class="fa-brands fa-google"></i> Login using Gmail
+          </a>
+      </div>
       <p class="my-1">
         <a href="/auth/password-reset/<%= locals.currentGuard %>/request" style="text-decoration: none;">I forgot my password</a>
       </p>
