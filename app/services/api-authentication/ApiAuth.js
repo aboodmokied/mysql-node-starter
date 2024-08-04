@@ -89,6 +89,30 @@ class ApiAuth{
         });
         return token;
     };
+    async generateTokenWithOauth(userData,revokePrev=false){
+        const guardObj=authConfig.guards[this.#guard];
+        if(!guardObj.drivers.includes('token')){
+            throw new BadRequestError('Proccess Not Allowed');
+        }
+        const model=authConfig.providers[guardObj.provider]?.model;
+        const user=await model.findOne({where:{...userData,guard:this.#guard}});
+        if(!user)throw new AuthenticationError(`no user "${this.#guard}" with this email "${userData.email}", try to register`);
+        const authClient=await AuthClient.findOne({where:{guard:this.#guard,revoked:false}});
+        const token=jwt.sign({id:user.id},authClient.secret); 
+        const signature=token.split('.')[2];
+        const expiresAt=Date.now() + 30*24*60*60*1000;
+
+        if(revokePrev){
+            await AccessToken.update({revoked:true},{where:{userId:user.id,clientId:authClient.id}});
+        }
+        await AccessToken.create({
+            userId:user.id,
+            clientId:authClient.id,
+            signature,
+            expiresAt
+        });
+        return token;
+    };
 
     async #defineClients(){
         for(let guardName in authConfig.guards){

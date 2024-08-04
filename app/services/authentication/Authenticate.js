@@ -47,6 +47,35 @@ class Authenticate{
             return {passed:false,error:'proccess not allowed'}; // session-based authentication not allowed for this type of users
         }
     }
+    async attempWithOauth(req,userData){
+        // Before: guard validation required
+        const guardObj=authConfig.guards[this.#guard];
+        if(!guardObj) throw Error('something went wrong in authConfig, check it'); // error for the devs
+        if(guardObj.drivers.indexOf('session')!==-1){
+            const {provider}=guardObj;
+            const providerObj=authConfig.providers[provider];
+            const {driver}=providerObj;
+            if(driver=='Sequelize'){ // use Sequelize 
+                const {model}=providerObj;
+                // verify the user
+                const user=await model.findOne({
+                    where:{...userData,guard:this.#guard}
+                });
+                if(!user) return {passed:false,error:`no user "${this.#guard}" with this email "${userData.email}", try to register`};
+                // passed
+                req.session.isAuthenticated=true;
+                req.session.userId=user.id;
+                req.session.guard=this.#guard;
+                return {passed:true,error:null};
+            }else if(driver=='db'){ // use pure mysql 
+                throw Error('this feature not completed');
+            }else{
+                throw Error('something went wrong in authConfig, check it'); // error for the devs
+            }
+        }else{
+            return {passed:false,error:'proccess not allowed'}; // session-based authentication not allowed for this type of users
+        }
+    }
 
     logout(req){
         req.session.destroy(error=>{

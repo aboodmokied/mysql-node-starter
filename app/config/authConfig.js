@@ -13,6 +13,7 @@ const authConfig={
     guards:{ // user types
         admin:{
             name:'admin',
+            oauth:false,
             drivers:['session','token'],
             registeration:'by-admin', // (that means any user can create a student account) or admin: (only admin can create new accounts) 
             provider:'admins', // mainProvider: contain all users types
@@ -22,6 +23,7 @@ const authConfig={
         },
         student:{
             name:'student',
+            oauth:true,
             drivers:['session','token'],
             registeration:'global', // (that means any user can create a student account) or admin: (only admin can create new accounts) 
             provider:'students', // mainProvider: contain all users types

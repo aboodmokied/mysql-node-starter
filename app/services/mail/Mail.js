@@ -43,7 +43,10 @@ class Mail{
                 throw new Error(`Transporter Not Found for this service: ${service}`)
             }
             transporter.sendMail({
-                from:transporter.options.auth.user,
+                from:{
+                    name:'Node-Starter',
+                    address:transporter.options.auth.user,
+                },
                 to:email,
                 subject,
                 html
@@ -73,7 +76,10 @@ class Mail{
                 token:hashedToken,
             });
             transporter.sendMail({
-                from:transporter.options.auth.user,
+                from:{
+                    name:'Node-Starter',
+                    address:transporter.options.auth.user,
+                },
                 to:email,
                 subject: 'Email Verification',
                 html: `<p>Hello ${this.name},</p>
@@ -97,7 +103,10 @@ class Mail{
                 throw new Error(`Transporter Not Found for this service: ${service}`)
             }
             transporter.sendMail({
-                from:transporter.options.auth.user,
+                from:{
+                    name:'Node-Starter',
+                    address:transporter.options.auth.user,
+                },
                 to:email,
                 subject,
                 html

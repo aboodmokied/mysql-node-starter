@@ -1,5 +1,4 @@
 const { body, query } = require("express-validator");
-const User = require("../models/User");
 const authConfig = require("../config/authConfig");
 const Role = require("../models/Role");
 const Permission = require("../models/Permission");
