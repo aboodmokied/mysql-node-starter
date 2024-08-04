@@ -1,6 +1,6 @@
 const {validationResult}=require('express-validator');
 const ValidationError=require('../../Errors/ErrorTypes/ValidationError');
-const { loginValidation, loginPageValidation, registerPageValidation, registerValidation, requestResetPageValidation, requestResetValidation, resetPageValidation, resetValidation, verifyEmailValidation } = require('../schemas/authValidation');
+const { loginValidation, loginPageValidation, registerPageValidation, registerValidation, requestResetPageValidation, requestResetValidation, resetPageValidation, resetValidation, verifyEmailValidation, oauthRequestValidation } = require('../schemas/authValidation');
 const { createRoleValidation, assignRolePermissionValidation, revokeRolePermissionValidation, deleteRoleValidation, rolePageValidation } = require('../schemas/authorizationValidation');
 const { usersPageValidation } = require('../schemas/userValidation');
 
@@ -28,6 +28,9 @@ const validateRequest=(type)=>{
             break;
         case 'register':
             validations=registerValidation;
+            break;
+        case 'oauth-request':
+            validations=oauthRequestValidation;
             break;
         case 'request-reset-page':
             validations=requestResetPageValidation;

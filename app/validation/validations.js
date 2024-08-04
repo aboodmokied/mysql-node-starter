@@ -1,4 +1,4 @@
-const { body, query } = require("express-validator");
+const { body, query,param } = require("express-validator");
 const authConfig = require("../config/authConfig");
 const Role = require("../models/Role");
 const Permission = require("../models/Permission");
@@ -117,3 +117,29 @@ exports.validatePermissionExistance=body('permissionId').notEmpty().withMessage(
 
 exports.normalizeEmailInQuery=query('email').normalizeEmail();
 exports.validateToken= body('token').notEmpty().withMessage('Token Required');
+
+
+exports.validateOauthProcess=param('process').custom((process)=>{
+    if(process=='register'||process=='login'){
+        return true;
+    }
+    throw new Error("proccess not provided, provided processes: 'register' or 'login'");
+});
+
+exports.validateOauthGuard=param('guard').custom((guard,{req})=>{
+    if(guard in authConfig.guards){
+        const guardObj=authConfig.guards[guard];
+        const {process}=req.params;
+        if(process=='register'){
+            if(guardObj.registeration=='global' && guardObj.oauth){
+                return true;
+            }
+        }
+        if(guardObj.oauth){
+            return true;
+        }
+        throw new Error(`process not allowed for this guard ${guard}`);
+        
+    }
+    throw new Error('Invalid Guard');
+});

@@ -1,4 +1,4 @@
-const { validateEmail, validateEmailExistence, validateName, validateGuard, validatePassword, validateConfirmPassword, validateRegisterPassword, validateLoginPassword, validateEmailIsFound, validateToken, validateEmailAsQuery, normalizeEmailInQuery } = require("../validations");
+const { validateEmail, validateEmailExistence, validateName, validateGuard, validatePassword, validateConfirmPassword, validateRegisterPassword, validateLoginPassword, validateEmailIsFound, validateToken, validateEmailAsQuery, normalizeEmailInQuery, validateOauthGuard, validateOauthProcess } = require("../validations");
 
 
 exports.loginPageValidation=[
@@ -47,4 +47,10 @@ exports.resetValidation=[ // token email password
 
 exports.verifyEmailValidation=[
     normalizeEmailInQuery
+];
+
+
+exports.oauthRequestValidation=[
+    validateOauthProcess,
+    validateOauthGuard
 ];

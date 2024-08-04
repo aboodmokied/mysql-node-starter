@@ -10,7 +10,7 @@ const errorHandler=(error,req,res,next)=>{
         if(error.type==="Validation"){
             const {errors}=error;
             // check guard param not found..
-            const notFound=errors.some(error=>error.location=='params');
+            const notFound=errors.find(error=>error.location=='params');
             if(notFound){
                 const NotFoundError = require("../Errors/ErrorTypes/NotFoundError");
                 error=new NotFoundError(notFound.msg);

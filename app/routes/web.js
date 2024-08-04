@@ -29,7 +29,7 @@ webRoutes.get('/auth/quick-login',isGuest,authController.getQuickLogin);
 webRoutes.post('/auth/login',isGuest,validateRequest('login'),authController.postLogin);
 
 // Oauth
-webRoutes.get('/auth/google/:process/:guard',oAuthController.googleAuthRequest);
+webRoutes.get('/auth/google/:process/:guard',isGuest,validateRequest('oauth-request'),oAuthController.googleAuthRequest);
 webRoutes.get('/api/auth/google/callback',oAuthController.googleAuthResponse);
 
 

@@ -6,9 +6,6 @@ const GoogleAuth = require("../services/o-auth/GoogleAuth");
 const Register = require("../services/registration/Register");
 const tryCatch = require("../util/tryCatch");
 
-// const googleAuthUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
-// const googleTokenUrl = 'https://oauth2.googleapis.com/token';
-// const googleUserInfoUrl = 'https://www.googleapis.com/oauth2/v1/userinfo';
 
 exports.googleAuthRequest=tryCatch(async(req,res,next)=>{
     const {guard,process}=req.params;
@@ -28,7 +25,7 @@ exports.googleAuthResponse=tryCatch(async(req,res,next)=>{
         throw new BadRequestError('Process not allowed');
     }
     const model=authConfig.providers[guardObj.provider].model;
-    const {id,name,email}=user;
+    const {name,email}=user;
     if(process=='register'){
         const count=await model.count({where:{email,guard}});
         if(count){
