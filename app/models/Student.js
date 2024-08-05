@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Op } = require("sequelize");
 const Application = require("../Application");
 
 const Student=Application.connection.define('student',{
@@ -30,3 +30,6 @@ const Student=Application.connection.define('student',{
 })
 
 module.exports=Student;
+
+
+Op
