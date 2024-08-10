@@ -11,6 +11,7 @@ application.run(app).then(()=>{
     app.listen(PORT,()=>{
         logger.info(`Server is running on port ${PORT}`);
     })
+    
 }).catch(error=>{
     console.log(error);
     // errorLogger.error(`ServerRunningError: 500 - ${error.stack}`);

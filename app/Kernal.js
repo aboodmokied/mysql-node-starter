@@ -15,6 +15,7 @@ const appendLocals = require('./middlewares/appendLocals');
 const methodOverride=require('./middlewares/methodOverride');
 const userToLocals = require('./middlewares/userToLocals');
 const notFoundHandler = require('./middlewares/notFoundHandler');
+const hpp = require('hpp');
 const Kernal={
     global:[
         requestLogger,
@@ -34,7 +35,8 @@ const Kernal={
     ],
     security:[
         helmet(), // adds many security headers
-        corsMiddleware()
+        corsMiddleware(),
+        hpp()
     ],
     api:[limiter('api')],
     web:[limiter('web'),verifyUser,addWith,appendLocals,methodOverride,userToLocals],
