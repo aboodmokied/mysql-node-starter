@@ -20,10 +20,9 @@ apiRoutes.get('/auth/google/callback',oAuthController.googleAuthResponse);
 
 
 apiRoutes.get('/test',tryCatch(async(req,res,next)=>{
-    const {queryOptions,respronseMetaDate}=await new QueryFeatures(req.query).filter().sort().fields().paginate(Student);
-    console.log({queryOptions});
-    const students=await Student.findAll(queryOptions);
-    res.send({status:true,result:{students},...respronseMetaDate,length:students.length});
+    const {data,respronseMetaDate}=await new QueryFeatures(req).findAllWithFeatures(Student);   
+    console.log('asdasd',{data,respronseMetaDate}) 
+    res.send({status:true,result:{data},...respronseMetaDate});
 }))
 
 // password reset

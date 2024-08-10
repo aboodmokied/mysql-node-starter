@@ -4,17 +4,24 @@ const BadRequestError = require("../Errors/ErrorTypes/BadRequestError");
 class QueryFeatures{
     queryOptions={};
     respronseMetaDate={};
-    constructor(queryStr){
-        this.queryStr=queryStr;
+    constructor(req){
+        this.queryStr=req.query;
     }
     
     // filtering
-    filter(){
-        const excludedParmas=['limit','page','fields','sort'];
+    filter(model){
+        // const excludedParmas=['limit','page','fields','sort'];
         const filteringProps={...this.queryStr};
-        excludedParmas.forEach(ele=>{
-            delete filteringProps[ele];
-        });
+        let modelAttr=Object.keys(model.rawAttributes);
+        const blacklist=['password','id','verified','googleOAuth','guard'];
+        for(let queryAttr in filteringProps){
+            if(!modelAttr.includes(queryAttr) || blacklist.includes(queryAttr)){
+                delete filteringProps[queryAttr];
+            }
+        }
+        // excludedParmas.forEach(ele=>{
+        //     delete filteringProps[ele];
+        // });
         if(Object.keys(filteringProps).length){
             const parsedQuery = {};
 
@@ -51,8 +58,11 @@ class QueryFeatures{
                 }
                
             }
-    
-            this.queryOptions.where = parsedQuery;
+            if(this.queryOptions.where){
+                this.queryOptions.where = {...this.queryOptions.where,...parsedQuery};
+            }else{
+                this.queryOptions.where=parsedQuery;
+            }
         }
         
         
@@ -132,6 +142,32 @@ class QueryFeatures{
             this.respronseMetaDate.totalPages= Math.ceil(count / limit);
         }
         return this;
+    }
+
+    search(model){
+        if(this.queryStr.search){
+        let modelAttr=Object.keys(model.rawAttributes);
+        const blacklist=['password','id','verified','googleOAuth','guard','updatedAt','createdAt'];
+        modelAttr=modelAttr.filter(attr=>!blacklist.includes(attr));
+        const orConditions=[];
+        modelAttr.forEach(attr=>{
+            orConditions.push({ [attr]: { [Op.like]: `%${this.queryStr.search}%` } });
+        });
+        if(!this.queryOptions.where){
+            this.queryOptions.where={};
+        }
+        this.queryOptions.where[Op.or]=orConditions;
+        }
+        return this;
+    }
+
+    async findAllWithFeatures(model){
+        await this.filter(model).search(model).fields().sort().paginate(model);
+        console.log(this.queryOptions);
+        const data=await model.findAll(this.queryOptions);
+        this.respronseMetaDate.length=data.length;
+        const result={data,respronseMetaDate:this.respronseMetaDate};
+        return result;
     }
 };
 
