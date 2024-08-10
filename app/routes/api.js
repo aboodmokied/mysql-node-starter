@@ -8,6 +8,8 @@ const validateRequest = require('../validation/middlewares/validateRequest');
 const verifyEmailToken = require('../services/mail/middlewares/verifyEmailToken');
 const verifyPassResetToken = require('../services/password-reset/middlewares/verifyPassResetToken');
 const isVerified = require('../middlewares/isVerified');
+const QueryFeatures = require('../util/QueryFeatures');
+const Student = require('../models/Student');
 
 apiRoutes.post('/login',validateRequest('login'),authController.login);
 apiRoutes.post('/register',validateRequest('register'),authController.register);
@@ -17,8 +19,11 @@ apiRoutes.get('/auth/google/:process/:guard',validateRequest('oauth-request'),oA
 apiRoutes.get('/auth/google/callback',oAuthController.googleAuthResponse);
 
 
-apiRoutes.get('/test',verifyToken,isVerified,tryCatch(async(req,res,next)=>{
-    res.send({status:true,message:'successfull'});
+apiRoutes.get('/test',tryCatch(async(req,res,next)=>{
+    const {queryOptions,respronseMetaDate}=await new QueryFeatures(req.query).filter().sort().fields().paginate(Student);
+    console.log({queryOptions});
+    const students=await Student.findAll(queryOptions);
+    res.send({status:true,result:{students},...respronseMetaDate,length:students.length});
 }))
 
 // password reset

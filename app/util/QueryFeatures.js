@@ -1,23 +1,61 @@
+const { Op } = require("sequelize");
+const BadRequestError = require("../Errors/ErrorTypes/BadRequestError");
+
 class QueryFeatures{
     queryOptions={};
+    respronseMetaDate={};
     constructor(queryStr){
         this.queryStr=queryStr;
     }
     
     // filtering
     filter(){
-        const excludedParmas=['limit','page','fileds','sort'];
+        const excludedParmas=['limit','page','fields','sort'];
         const filteringProps={...this.queryStr};
         excludedParmas.forEach(ele=>{
             delete filteringProps[ele];
         });
-
         if(Object.keys(filteringProps).length){
-            let filteringPropsAsStr=JSON.stringify(filteringProps);
-            filteringPropsAsStr.replace(/\b(ne|gt|gte|lt|lte)\b/g,(match)=>`[Op.${match}]`);
-            const where=JSON.parse(filteringPropsAsStr);
-            this.queryOptions.where=where;
+            const parsedQuery = {};
+
+            for (const [field, condition] of Object.entries(filteringProps)) {
+                if( typeof(filteringProps[field]) == 'object'){
+                    parsedQuery[field] = {};
+                    for (const [operator, value] of Object.entries(condition)) {
+                    let sequelizeOperator;
+        
+                    switch (operator) {
+                        case 'gte':
+                        sequelizeOperator = Op.gte;
+                        break;
+                        case 'lte':
+                        sequelizeOperator = Op.lte;
+                        break;
+                        case 'gt':
+                        sequelizeOperator = Op.gt;
+                        break;
+                        case 'lt':
+                        sequelizeOperator = Op.lt;
+                        break;
+                        case 'ne':
+                        sequelizeOperator = Op.ne;
+                        break;
+                        // Add more operators as needed
+                        default:
+                        throw new BadRequestError(`Unsupported operator: ${operator}`);
+                    }
+                    parsedQuery[field] = {[sequelizeOperator]:value};
+                    }
+                }else{
+                    parsedQuery[field] = filteringProps[field];
+                }
+               
+            }
+    
+            this.queryOptions.where = parsedQuery;
         }
+        
+        
         
         return this;
     }
@@ -48,9 +86,53 @@ class QueryFeatures{
     }
 
     // limiting fileds
-
+    fields(){
+        if(this.queryStr.fields){
+            let process='include';
+            let fieldsArr= this.queryStr.fields.split(',');
+            if(fieldsArr[0].startsWith('-')){
+                process='exclude';
+            }
+            let notAllowed=false;
+            if(process=='exclude'){ // each field should starts with -
+                notAllowed=fieldsArr.some(field=>!field.startsWith('-'));
+            }else{ // each field should not starts with -
+                notAllowed=fieldsArr.some(field=>field.startsWith('-'))
+            }
+            if(notAllowed){
+                throw new BadRequestError('Proccess not allowed, all fields should be exclude or include');
+            }
+            if(process=='exclude'){
+                fieldsArr=fieldsArr.map(f=>f.substring(1));
+                this.queryOptions.attributes={};
+                this.queryOptions.attributes[process]=fieldsArr;
+            }else{
+                this.queryOptions.attributes=fieldsArr;
+            }
+            
+        }
+        return this;
+    }
     // pagination
-
+    
+    async paginate(model){
+        const page = parseInt(this.queryStr.page) || 1;
+        const limit = parseInt(this.queryStr.limit) || 10;
+        const offset = (page - 1) * limit;
+        this.queryOptions.offset=offset;
+        this.queryOptions.limit=limit;
+        this.respronseMetaDate.currentPage=page;
+        if(model){
+            const options={};
+            if(this.queryOptions.where){
+                options.where=this.queryOptions.where;
+            }
+            const count=await model.count(options);
+            this.respronseMetaDate.totalItems=count;
+            this.respronseMetaDate.totalPages= Math.ceil(count / limit);
+        }
+        return this;
+    }
 };
 
 module.exports=QueryFeatures;

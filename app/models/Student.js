@@ -32,4 +32,3 @@ const Student=Application.connection.define('student',{
 module.exports=Student;
 
 
-Op
